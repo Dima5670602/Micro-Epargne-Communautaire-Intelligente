@@ -1,0 +1,162 @@
+:root {
+  --bg-color: #0a0a1a;
+  --card-bg: rgba(20, 25, 40, 0.8);
+  --text-color: #e0e6ff;
+  --primary-color: #3d7bff;
+  --accent-color: #18ffff;
+  --success-color: #00e676;
+  --error-color: #ff1744;
+  --warning-color: #ffea00;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --glass-effect: rgba(255, 255, 255, 0.05);
+  --transition-speed: 0.3s;
+  --shadow-color: rgba(0, 0, 0, 0.4);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", "Segoe UI", sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, #04040f, #0a0a1a);
+  color: var(--text-color);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.navbar {
+  background: var(--card-bg);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: 0 4px 20px var(--shadow-color);
+}
+
+.navbar-brand {
+  color: var(--accent-color) !important;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.nav-link {
+  color: var(--text-color) !important;
+  margin: 0 10px;
+  transition: color var(--transition-speed);
+}
+
+.nav-link:hover {
+  color: var(--primary-color) !important;
+}
+
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 15px;
+  box-shadow: 0 8px 25px var(--shadow-color);
+  backdrop-filter: blur(12px);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(61, 123, 255, 0.3);
+}
+
+.card-header {
+  color: var(--accent-color);
+  font-weight: 500;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.btn {
+  border: none;
+  border-radius: 10px;
+  font-weight: 500;
+  padding: 10px 18px;
+  transition: all var(--transition-speed);
+  letter-spacing: 0.5px;
+}
+
+.btn-primary {
+  background: var(--primary-color);
+  color: #fff;
+  box-shadow: 0 0 10px rgba(61, 123, 255, 0.5);
+}
+
+.btn-primary:hover {
+  background: #2560ff;
+  box-shadow: 0 0 20px rgba(24, 255, 255, 0.6);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--accent-color);
+  border: 1px solid var(--accent-color);
+}
+
+.btn-outline:hover {
+  background: var(--accent-color);
+  color: #000;
+}
+
+.form-control {
+  background: var(--glass-effect);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  transition: border-color var(--transition-speed);
+}
+
+.form-control:focus {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 10px rgba(24, 255, 255, 0.2);
+  outline: none;
+}
+
+.dashboard {
+  padding: 40px;
+}
+
+.dashboard-header {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--accent-color);
+  margin-bottom: 25px;
+}
+
+.stats-card {
+  background: var(--card-bg);
+  padding: 20px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: 0 4px 20px var(--shadow-color);
+  transition: 0.3s;
+}
+
+.stats-card:hover {
+  box-shadow: 0 0 30px rgba(24, 255, 255, 0.3);
+}
+
+.alert {
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-color);
+  border-left: 4px solid var(--accent-color);
+}
+
+@media (max-width: 768px) {
+  .dashboard {
+    padding: 20px;
+  }
+
+  .navbar-brand {
+    font-size: 1rem;
+  }
+
+  .stats-card {
+    margin-bottom: 20px;
+  }
+}

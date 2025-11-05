@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Profil - Micro Épargne</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: #0d1117;
+      color: #cdd9e5;
+      font-family: 'Orbitron', sans-serif;
+      min-height: 100vh;
+    }
+
+    .topbar {
+      background: #161b22;
+      padding: 14px 24px;
+      box-shadow: 0 6px 20px rgba(0, 255, 255, 0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #21262d;
+    }
+
+    .topbar strong {
+      color: #39ff14;
+      font-size: 1.2rem;
+    }
+
+    .profile-card {
+      max-width: 960px;
+      margin: 32px auto;
+      padding: 28px;
+      background: #161b22;
+      border-radius: 12px;
+      box-shadow: 0 6px 30px rgba(0, 255, 255, 0.1);
+      border: 1px solid #21262d;
+    }
+
+    h4, h6 {
+      color: #39ff14;
+    }
+
+    .small-muted {
+      font-size: .9rem;
+      color: #8b949e;
+    }
+
+    .form-label {
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: #58a6ff;
+    }
+
+    #formEditProfile input:disabled {
+      background-color: #0d1117;
+      border-color: #30363d;
+      color: #8b949e;
+    }
+
+    .plan-card {
+      border: 1px solid #21262d;
+      border-radius: 10px;
+      padding: 14px;
+      background: #0d1117;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .plan-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(57, 255, 20, 0.2);
+    }
+
+    .btn-outline-primary {
+      color: #39ff14;
+      border-color: #39ff14;
+    }
+
+    .btn-outline-primary:hover {
+      background: #39ff14;
+      color: #0d1117;
+      border-color: #39ff14;
+    }
+
+    .btn-outline-secondary {
+      color: #58a6ff;
+      border-color: #58a6ff;
+    }
+
+    .btn-outline-secondary:hover {
+      background: #58a6ff;
+      color: #0d1117;
+    }
+
+    .badge.bg-warning {
+      background: linear-gradient(45deg, #39ff14, #0ff);
+      color: #0d1117;
+      font-weight: bold;
+      text-shadow: 0 0 6px rgba(0,255,255,0.4);
+    }
+
+    hr {
+      border-color: #21262d;
+    }
+
+    #paymentHistory ul {
+      padding-left: 20px;
+    }
+
+    #paymentHistory li {
+      margin-bottom: 6px;
+    }
+
+    .alert {
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    .text-end {
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div><strong>Micro Épargne</strong></div>
+    <div>
+      <button id="btnBack" class="btn btn-sm btn-outline-secondary">Retour</button>
+      <button id="btnLogout" class="btn btn-sm btn-outline-danger">Se déconnecter</button>
+    </div>
+  </div>
+
+  <div class="profile-card">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+      <div>
+        <h4 id="userName">Profil</h4>
+        <div id="userEmail" class="small-muted"></div>
+        <div id="userRole" class="small-muted"></div>
+      </div>
+      <div class="text-end">
+        <div id="premiumBadge" class="badge bg-warning text-dark" style="display:none">Premium</div>
+        <button id="btnEdit" class="btn btn-sm btn-outline-primary">Modifier profil</button>
+      </div>
+    </div>
+
+    <hr />
+
+    <div class="row g-3">
+      <div class="col-md-12">
+        <h6>Modifier le profil</h6>
+        <form id="formEditProfile" class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label small">Prénom</label>
+            <input type="text" name="prenom" class="form-control form-control-sm" placeholder="Prénom" disabled>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small">Nom</label>
+            <input type="text" name="nom" class="form-control form-control-sm" placeholder="Nom" disabled>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small">Email</label>
+            <input type="email" name="email" class="form-control form-control-sm" placeholder="Email" disabled>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small">Téléphone</label>
+            <input type="tel" name="phone" class="form-control form-control-sm" placeholder="Téléphone" disabled>
+          </div>
+          <div class="col-12">
+            <button type="submit" class="btn btn-primary btn-sm">Modifier le profil</button>
+            <button type="button" id="btnCancelEdit" class="btn btn-secondary btn-sm" style="display:none">Annuler</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="col-md-6">
+        <h6>Abonnement Premium</h6>
+        <p class="small-muted">Passez premium pour débloquer jusqu'à 100 créations/ intégrations.</p>
+        <div class="d-flex gap-2">
+          <div class="plan-card flex-grow-1">
+            <div><strong>Mensuel</strong></div>
+            <div class="small-muted">Réglez mensuellement</div>
+            <div class="mt-2"><button class="btn btn-sm btn-outline-primary subscribe" data-plan="monthly">Souscrire</button></div>
+          </div>
+          <div class="plan-card flex-grow-1">
+            <div><strong>Trimestriel</strong></div>
+            <div class="small-muted">3 mois</div>
+            <div class="mt-2"><button class="btn btn-sm btn-outline-primary subscribe" data-plan="quarterly">Souscrire</button></div>
+          </div>
+          <div class="plan-card flex-grow-1">
+            <div><strong>Annuel</strong></div>
+            <div class="small-muted">1 an</div>
+            <div class="mt-2"><button class="btn btn-sm btn-outline-primary subscribe" data-plan="yearly">Souscrire</button></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <h6>Historique de paiement</h6>
+        <div id="paymentHistory" class="small-muted">Chargement...</div>
+      </div>
+    </div>
+
+    <hr />
+    <div class="d-flex justify-content-between">
+      <div class="small-muted">Vous pouvez gérer votre profil et activer l'abonnement depuis ici.</div>
+      <div><button id="btnRefresh" class="btn btn-sm btn-outline-secondary">Rafraîchir</button></div>
+    </div>
+  </div>
+
+  <script>
+  (() => {
+    const API_BASE = window.API_BASE_URL || "";
+    const token = localStorage.getItem("mec_token");
+    if (!token) { window.location.href = "login.html"; }
+    const headers = { "Content-Type": "application/json", "Authorization": "Bearer " + token };
+
+    const userNameEl = document.getElementById("userName");
+    const userEmailEl = document.getElementById("userEmail");
+    const userRoleEl = document.getElementById("userRole");
+    const premiumBadge = document.getElementById("premiumBadge");
+    const paymentHistory = document.getElementById("paymentHistory");
+    const btnLogout = document.getElementById("btnLogout");
+    const btnBack = document.getElementById("btnBack");
+    const subscribeButtons = document.querySelectorAll(".subscribe");
+    const btnRefresh = document.getElementById("btnRefresh");
+    const btnEdit = document.getElementById("btnEdit");
+    const btnCancelEdit = document.getElementById("btnCancelEdit");
+
+    let currentUser = null;
+    let isEditing = false;
+
+    btnLogout.addEventListener("click", ()=>{ localStorage.removeItem("mec_token"); localStorage.removeItem("mec_role"); window.location.href = "login.html"; });
+    btnBack.addEventListener("click", ()=> { const role = localStorage.getItem("mec_role"); window.location.href = role === "organisateur" ? "dashboard_organizer.html" : "dashboard_participant.html"; });
+
+    function fillEditForm(user) {
+      const form = document.getElementById("formEditProfile");
+      if (form) {
+        form.querySelector('[name="prenom"]').value = user.prenom || '';
+        form.querySelector('[name="nom"]').value = user.nom || user.name || '';
+        form.querySelector('[name="email"]').value = user.email || '';
+        form.querySelector('[name="phone"]').value = user.phone || user.telephone || '';
+      }
+    }
+
+    function toggleEditMode(editing) {
+      isEditing = editing;
+      const form = document.getElementById("formEditProfile");
+      const inputs = form.querySelectorAll('input');
+      const submitBtn = form.querySelector('button[type="submit"]');
+      inputs.forEach(input => { input.disabled = !editing; });
+      if (editing) {
+        btnCancelEdit.style.display = 'inline-block';
+        submitBtn.textContent = 'Enregistrer les modifications';
+        submitBtn.classList.remove('btn-primary');
+        submitBtn.classList.add('btn-success');
+      } else {
+        btnCancelEdit.style.display = 'none';
+        submitBtn.textContent = 'Modifier le profil';
+        submitBtn.classList.remove('btn-success');
+        submitBtn.classList.add('btn-primary');
+        if (currentUser) fillEditForm(currentUser);
+      }
+    }
+
+    btnEdit.addEventListener("click", ()=> toggleEditMode(!isEditing));
+    btnCancelEdit.addEventListener("click", ()=> toggleEditMode(false));
+
+    document.getElementById("formEditProfile").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!isEditing) return toggleEditMode(true);
+      const button = e.target.querySelector('button[type="submit"]');
+      const originalText = button.textContent;
+      button.disabled = true;
+      button.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Enregistrement...';
+      try {
+        const formData = new FormData(e.target);
+        const payload = {
+          prenom: formData.get("prenom")?.trim() || '',
+          nom: formData.get("nom")?.trim() || '',
+          email: formData.get("email")?.trim() || '',
+          phone: formData.get("phone")?.trim() || ''
+        };
+        if (!payload.prenom || !payload.nom) throw new Error("Le prénom et le nom sont obligatoires");
+        if (!payload.email || !payload.email.includes('@')) throw new Error("Un email valide est obligatoire");
+
+        const res = await fetch(API_BASE + "/api/profile/update", { method:"PUT", headers, body: JSON.stringify(payload) });
+        if (!res.ok) { const error = await res.json(); throw new Error(error.message || "Erreur lors de la modification"); }
+
+        currentUser = { ...currentUser, ...payload };
+        userNameEl.innerText = `${payload.prenom} ${payload.nom}`.trim();
+        userEmailEl.innerText = payload.email;
+        toggleEditMode(false);
+        showNotification(" Profil modifié avec succès!", "success");
+      } catch(err) {
+        showNotification("❌ Erreur: " + err.message, "danger");
+      } finally {
+        button.disabled = false;
+        button.textContent = originalText;
+      }
+    });
+
+    async function loadProfile() {
+      try {
+        const res = await fetch(API_BASE + "/api/profile", { headers });
+        if (!res.ok) { userNameEl.innerText = "Erreur"; return; }
+        const data = await res.json();
+        const user = data.data || data;
+        currentUser = user;
+        userNameEl.innerText = `${user.prenom || ''} ${user.nom || user.name || ''}`.trim() || "Profil";
+        userEmailEl.innerText = user.email || "";
+        userRoleEl.innerText = `Rôle: ${user.role || localStorage.getItem("mec_role") || ""}`;
+        premiumBadge.style.display = (user.isPremium || user.is_premium) ? "inline-block" : "none";
+        fillEditForm(user);
+        loadPaymentHistory(user.id);
+      } catch(err) { userNameEl.innerText = "Erreur de chargement"; console.error(err); }
+    }
+
+    async function loadPaymentHistory(userId) {
+      try {
+        if (!userId) { paymentHistory.innerHTML = "<div class='small-muted'>Aucune donnée</div>"; return; }
+        const res = await fetch(API_BASE + `/api/history/user/${userId}`, { headers });
+        if (!res.ok) { paymentHistory.innerHTML = "<div class='small-muted'>Impossible de charger</div>"; return; }
+        const data = await res.json();
+        const rows = data.data || [];
+        paymentHistory.innerHTML = rows.length ? `<ul>${rows.map(r=>`<li>${escapeHtml(r.description||r.type||'Paiement')} — <strong>${r.amount||r.montant||''}</strong> (${new Date(r.created_at||r.createdAt).toLocaleString()})</li>`).join("")}</ul>` : "<div class='small-muted'>Aucun paiement</div>";
+      } catch(err){ console.error(err); paymentHistory.innerHTML = "<div class='small-muted'>Erreur réseau</div>"; }
+    }
+
+    subscribeButtons.forEach(btn => btn.addEventListener("click", async (e) => {
+      const plan = e.currentTarget.getAttribute("data-plan");
+      if (!confirm(`Confirmer la souscription (${plan}) ?`)) return;
+      try {
+        const res = await fetch(API_BASE + "/api/profile/subscribe", { method:"POST", headers, body: JSON.stringify({ plan })});
+        const data = await res.json();
+        if (!res.ok) return alert(data.message || "Erreur abonnement");
+        alert("Abonnement activé avec succès !");
+        loadProfile();
+      } catch(err){ console.error(err); alert("Erreur réseau"); }
+    }));
+
+    btnRefresh.addEventListener("click", loadProfile);
+
+    function escapeHtml(s){ if(!s) return ""; return String(s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+    function showNotification(message, type="info"){
+      const notification = document.createElement('div');
+      notification.className = `alert alert-${type==='success'?'success':'danger'} alert-dismissible fade show position-fixed`;
+      notification.style.cssText = "top:20px;right:20px;z-index:9999;min-width:300px;box-shadow:0 4px 12px rgba(0,0,0,0.15)";
+      notification.innerHTML = `${message}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
+      document.body.appendChild(notification);
+      setTimeout(()=>{ if(notification.parentNode) notification.remove(); },5000);
+    }
+
+    loadProfile();
+  })();
+  </script>
+</body>
+</html>

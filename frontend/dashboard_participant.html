@@ -1,0 +1,2095 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Tableau de bord participant</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --glass: rgba(20, 20, 30, 0.6);
+      --accent: #00f2ff;
+      --accent2: #ff00c1;
+      --radius: 12px;
+      --glow: 0 0 8px var(--accent), 0 0 16px var(--accent);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: #fff;
+      font-family: 'Roboto', sans-serif;
+      min-height: 100vh;
+      background-image:
+        radial-gradient(circle at 20% 50%, rgba(0, 242, 255, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(255, 0, 193, 0.08) 0%, transparent 50%);
+    }
+
+    .topbar {
+      backdrop-filter: blur(12px);
+      background: var(--glass);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1020;
+    }
+
+    .topbar strong {
+      font-family: 'Orbitron', sans-serif;
+      letter-spacing: 1px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .portal-btn {
+      background: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      padding: 0.4rem 0.8rem;
+      border-radius: var(--radius);
+      font-size: 0.9rem;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .portal-btn:hover {
+      background: var(--accent);
+      color: #000;
+      box-shadow: var(--glow);
+    }
+
+    .container-main {
+      max-width: 1200px;
+      margin: 24px auto;
+      padding: 0 1rem;
+    }
+
+    .portal-card {
+      backdrop-filter: blur(12px);
+      background: var(--glass);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: 0 0 20px rgba(0, 242, 255, 0.15);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .portal-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 0 30px rgba(0, 242, 255, 0.3);
+    }
+
+    .balance-card {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #000;
+    }
+
+    .balance-card h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2rem;
+    }
+
+    .quick-action-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    .action-card {
+      backdrop-filter: blur(12px);
+      background: var(--glass);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .action-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 0 20px rgba(0, 242, 255, 0.3);
+    }
+
+    .action-card i {
+      color: var(--accent);
+    }
+
+    .portal-tabs {
+      display: flex;
+      gap: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 1.5rem;
+      overflow-x: auto;
+    }
+
+    .portal-tab {
+      padding: 0.75rem 1rem;
+      color: #ccc;
+      text-decoration: none;
+      border-bottom: 2px solid transparent;
+      transition: all 0.3s;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .portal-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+      text-shadow: 0 0 4px var(--accent);
+    }
+
+    .portal-tab:hover {
+      color: #fff;
+    }
+
+    .portal-input, .portal-select, .portal-textarea {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(0, 0, 0, 0.4);
+      color: #fff;
+      font-size: 1rem;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .portal-input:focus, .portal-select:focus, .portal-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: var(--glow);
+    }
+
+    .portal-btn-primary {
+      width: 100%;
+      padding: 0.85rem;
+      font-size: 1rem;
+      font-weight: 500;
+      border: none;
+      border-radius: var(--radius);
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      color: #000;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+
+    .portal-btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--glow);
+    }
+
+    .portal-btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .notification-item {
+      border-left: 3px solid var(--accent);
+      background: rgba(0, 0, 0, 0.3);
+      padding: 0.75rem;
+      border-radius: var(--radius);
+      margin-bottom: 0.5rem;
+      transition: transform 0.2s;
+    }
+
+    .notification-item:hover {
+      transform: translateX(4px);
+    }
+
+    .notification-item.unread {
+      border-left-color: var(--accent2);
+      background: rgba(255, 0, 193, 0.1);
+    }
+
+    .text-accent {
+      color: var(--accent);
+    }
+
+    .text-accent2 {
+      color: var(--accent2);
+    }
+
+    @media (max-width: 768px) {
+      .quick-action-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div><strong>Micro Épargne</strong> Participant</div>
+    <div>
+      <button id="btnProfile" class="btn btn-sm btn-outline-primary">Profil</button>
+      <button id="btnLogout" class="btn btn-sm btn-outline-secondary">Se déconnecter</button>
+    </div>
+  </div>
+
+  <div class="container-main">
+    <!-- Navigation par onglets -->
+    <ul class="nav nav-tabs mb-4" id="participantTabs">
+      <li class="nav-item">
+        <a class="nav-link active" data-bs-toggle="tab" href="#tab-dashboard">
+          <i class="bi bi-speedometer2"></i> Tableau de bord
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="tab" href="#tab-discover">
+          <i class="bi bi-compass"></i> Découvrir
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="tab" href="#tab-my-tontines">
+          <i class="bi bi-piggy-bank"></i> Mes Tontines
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="tab" href="#tab-payments">
+          <i class="bi bi-currency-exchange"></i> Paiements
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="tab" href="#tab-messages">
+          <i class="bi bi-chat"></i> Messages
+        </a>
+      </li>
+    </ul>
+
+    <div class="tab-content">
+      <!-- NOUVEL ONGLET : Tableau de bord -->
+      <div class="tab-pane fade show active" id="tab-dashboard">
+        <div class="row g-4">
+          <!-- Cartes de solde -->
+          <div class="col-md-6">
+            <div class="card balance-card p-4">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h5 class="card-title mb-1">Solde Tontines</h5>
+                  <h2 class="mb-0" id="tontineBalance">0 XOF</h2>
+                  <small>Total cotisations versées</small>
+                </div>
+                <i class="bi bi-piggy-bank fs-1 opacity-75"></i>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-md-6">
+            <div class="card balance-card p-4">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h5 class="card-title mb-1">Solde Corridors</h5>
+                  <h2 class="mb-0" id="corridorBalance">0 XOF</h2>
+                  <small>Total cotisations versées</small>
+                </div>
+                <i class="bi bi-graph-up fs-1 opacity-75"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions rapides -->
+          <div class="col-12">
+            <h4 class="mb-3">Actions Rapides</h4>
+            <div class="quick-action-grid">
+              <div class="card action-card text-center p-3" onclick="window.showPaymentModal()">
+                <i class="bi bi-cash-coin fs-1 text-primary"></i>
+                <h6 class="mt-2">Payer Cotisation</h6>
+                <small class="text-muted">Effectuer un paiement</small>
+              </div>
+              <div class="card action-card text-center p-3" onclick="window.showReceiptModal()">
+                <i class="bi bi-wallet2 fs-1 text-success"></i>
+                <h6 class="mt-2">Recevoir Fonds</h6>
+                <small class="text-muted">Si c'est votre tour</small>
+              </div>
+              <div class="card action-card text-center p-3" onclick="window.loadBalances()">
+                <i class="bi bi-eye fs-1 text-info"></i>
+                <h6 class="mt-2">Consulter Soldes</h6>
+                <small class="text-muted">Voir mes soldes</small>
+              </div>
+              <div class="card action-card text-center p-3" onclick="window.loadMyTontines()">
+                <i class="bi bi-list-check fs-1 text-warning"></i>
+                <h6 class="mt-2">Mes Engagements</h6>
+                <small class="text-muted">Voir mes tontines</small>
+              </div>
+            </div>
+          </div>
+
+          <!-- Prochains paiements -->
+          <div class="col-lg-6">
+            <div class="card p-3">
+              <h5><i class="bi bi-calendar-check"></i> Prochains Paiements</h5>
+              <div id="upcomingPayments" class="mt-2">
+                <div class="text-center text-muted py-3">
+                  <i class="bi bi-hourglass-split"></i>
+                  <div class="small mt-2">Chargement des paiements...</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dernières transactions -->
+          <div class="col-lg-6">
+            <div class="card p-3">
+              <h5><i class="bi bi-clock-history"></i> Dernières Transactions</h5>
+              <div id="recentTransactions" class="mt-2">
+                <div class="text-center text-muted py-3">
+                  <i class="bi bi-hourglass-split"></i>
+                  <div class="small mt-2">Chargement des transactions...</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ONGLET EXISTANT : Découverte -->
+      <div class="tab-pane fade" id="tab-discover">
+        <div class="row g-4">
+          <div class="col-lg-7">
+            <div class="card p-3 mb-3">
+              <h5><i class="bi bi-piggy-bank"></i> Tontines disponibles</h5>
+              <div id="tontines" class="mt-2 small-muted">Chargement...</div>
+            </div>
+
+            <div class="card p-3">
+              <h5><i class="bi bi-graph-up"></i> Corridors disponibles</h5>
+              <div id="corridors" class="mt-2 small-muted">Chargement...</div>
+            </div>
+          </div>
+
+          <div class="col-lg-5">
+            <div class="card p-3 mb-3">
+              <h6><i class="bi bi-key"></i> Rejoindre par jeton</h6>
+              <form id="joinTokenForm" class="d-flex gap-2">
+                <input name="token" class="form-control" placeholder="Collez le jeton ici" required />
+                <button class="btn btn-primary">Rejoindre</button>
+              </form>
+              <div id="joinTokenMsg" class="mt-2 small-muted"></div>
+            </div>
+
+            <!-- Section Notifications -->
+            <div class="card p-3">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="mb-0">
+                  <i class="bi bi-bell"></i> Mes notifications
+                  <span id="notificationCount" class="badge bg-primary ms-2">0</span>
+                </h6>
+                <div class="d-flex gap-2">
+                  <button id="btnRefreshNotifications" class="btn btn-sm btn-outline-primary" title="Actualiser les notifications">
+                    <i class="bi bi-arrow-clockwise"></i>
+                  </button>
+                  <button id="btnClearNotifications" class="btn btn-sm btn-outline-danger" title="Vider toutes les notifications">
+                    <i class="bi bi-trash"></i> Vider
+                  </button>
+                </div>
+              </div>
+              
+              <div id="notifications" class="notifications-container">
+                <div class="text-center text-muted py-3">
+                  <i class="bi bi-hourglass-split"></i>
+                  <div class="small mt-2">Chargement des notifications...</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ONGLET EXISTANT : Mes Tontines -->
+      <div class="tab-pane fade" id="tab-my-tontines">
+        <div class="row">
+          <div class="col-12">
+            <div class="card p-3">
+              <h5><i class="bi bi-piggy-bank"></i> Mes Tontines & Corridors</h5>
+              <div id="myTontinesList" class="mt-3">
+                <div class="text-center text-muted">Chargement de vos tontines...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- NOUVEL ONGLET : Paiements -->
+      <div class="tab-pane fade" id="tab-payments">
+        <div class="row g-4">
+          <div class="col-lg-6">
+            <div class="card p-3">
+              <h5><i class="bi bi-cash-coin"></i> Effectuer un Paiement</h5>
+              <form id="paymentForm" class="row g-3">
+                <div class="col-12">
+                  <label class="form-label">Type</label>
+                  <select id="paymentType" class="form-select" required>
+                    <option value="">Sélectionnez le type</option>
+                    <option value="tontine">Tontine</option>
+                    <option value="corridor">Corridor</option>
+                  </select>
+                </div>
+                <div class="col-12">
+                  <label class="form-label">Sélection</label>
+                  <select id="paymentSelection" class="form-select" required>
+                    <option value="">Sélectionnez d'abord le type</option>
+                  </select>
+                </div>
+                <div class="col-12">
+                  <label class="form-label">Montant (XOF)</label>
+                  <input type="number" id="paymentAmount" class="form-control" placeholder="Montant à payer" required>
+                </div>
+                <div class="col-12">
+                  <label class="form-label">Méthode de paiement</label>
+                  <select id="paymentMethod" class="form-select" required>
+                    <option value="mobile_money">Mobile Money</option>
+                    <option value="cash">Espèces</option>
+                    <option value="bank_transfer">Virement bancaire</option>
+                  </select>
+                </div>
+                <div class="col-12">
+                  <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-check-circle"></i> Effectuer le Paiement
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div class="col-lg-6">
+            <div class="card p-3">
+              <h5><i class="bi bi-wallet2"></i> Recevoir des Fonds</h5>
+              <div id="fundReceiptSection">
+                <div class="text-center text-muted py-4">
+                  <i class="bi bi-info-circle fs-1"></i>
+                  <div class="mt-2">Sélectionnez une tontine pour voir si c'est votre tour</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card p-3 mt-3">
+              <h5><i class="bi bi-clock-history"></i> Historique des Paiements</h5>
+              <div id="paymentHistory" class="mt-2">
+                <div class="text-center text-muted">Aucun paiement effectué</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ONGLET EXISTANT : Messages -->
+      <div class="tab-pane fade" id="tab-messages">
+        <div class="row g-4">
+          <div class="col-lg-6">
+            <div class="card p-3">
+              <h5><i class="bi bi-chat-left"></i> Messages Reçus</h5>
+              <div id="receivedMessages" class="mt-2">
+                <div class="text-center text-muted">Chargement des messages...</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="card p-3">
+              <h5><i class="bi bi-send"></i> Envoyer un Message</h5>
+              <form id="sendMessageForm" class="row g-2">
+                <div class="col-12">
+                  <select id="messageToTontine" class="form-select" required>
+                    <option value="">Sélectionnez une tontine</option>
+                  </select>
+                </div>
+                <div class="col-12">
+                  <select id="messageToOrganizer" class="form-select" required>
+                    <option value="">Sélectionnez un organisateur</option>
+                  </select>
+                </div>
+                <div class="col-12">
+                  <textarea class="form-control" placeholder="Votre message à l'organisateur..." rows="4" required></textarea>
+                </div>
+                <div class="col-12">
+                  <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-send"></i> Envoyer le Message
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <!-- Section Statut des Paiements -->
+            <div class="card p-3 mt-3">
+              <h5><i class="bi bi-currency-exchange"></i> Statut des Paiements</h5>
+              <div id="paymentStatusSection" class="mt-2">
+                <div class="text-center text-muted">Sélectionnez une tontine pour voir les statuts</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Paiement -->
+  <div class="modal fade" id="paymentModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Effectuer un Paiement</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="quickPaymentForm">
+            <div class="mb-3">
+              <label class="form-label">Sélectionnez une tontine/corridor</label>
+              <select id="quickPaymentSelection" class="form-select" required>
+                <option value="">Chargement...</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Montant (XOF)</label>
+              <input type="number" class="form-control" id="quickPaymentAmount" required>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+          <button type="button" class="btn btn-primary" onclick="window.processQuickPayment()">Payer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Réception de Fonds -->
+  <div class="modal fade" id="receiptModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Recevoir des Fonds</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div id="receiptContent">
+            <div class="text-center text-muted py-3">
+              <i class="bi bi-hourglass-split"></i>
+              <div class="mt-2">Chargement des informations...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Détails (existant) -->
+  <div class="modal fade" id="detailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content" id="detailsModalContent">
+        <!-- Le contenu sera injecté dynamiquement -->
+      </div>
+    </div>
+  </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+(() => {
+  // Suppression des écouteurs d'événements de mutation obsolètes
+  if (typeof EventTarget !== 'undefined') {
+    const originalAddEventListener = EventTarget.prototype.addEventListener;
+    EventTarget.prototype.addEventListener = function(type, listener, options) {
+      if (type === 'DOMNodeInsertedIntoDocument' || 
+          type === 'DOMNodeInserted' || 
+          type === 'DOMNodeRemoved' || 
+          type === 'DOMAttrModified') {
+        console.warn(` Événement de mutation obsolète "${type}" détecté. Utilisez MutationObserver à la place.`);
+        return;
+      }
+      originalAddEventListener.call(this, type, listener, options);
+    };
+  }
+
+  const API_BASE = window.API_BASE_URL || "";
+  const token = localStorage.getItem("mec_token");
+  const role = localStorage.getItem("mec_role");
+
+  if (!token || role !== "participant") {
+    alert("Vous devez être connecté en tant que participant.");
+    window.location.href = "login.html";
+  }
+
+  const headers = { "Content-Type": "application/json", "Authorization": "Bearer " + token };
+  
+  // Éléments DOM
+  const tontinesEl = document.getElementById("tontines");
+  const corridorsEl = document.getElementById("corridors");
+  const notificationsEl = document.getElementById("notifications");
+  const myTontinesList = document.getElementById("myTontinesList");
+  const receivedMessages = document.getElementById("receivedMessages");
+  const btnLogout = document.getElementById("btnLogout");
+  const btnProfile = document.getElementById("btnProfile");
+  const paymentTypeSelect = document.getElementById("paymentType");
+  const paymentSelection = document.getElementById("paymentSelection");
+
+  // FONCTIONS UTILITAIRES
+
+  function escapeHtml(s){ 
+    if(!s) return ""; 
+    return String(s).replace(/[&<>"']/g, m => ({ 
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' 
+    })[m]); 
+  }
+
+  // Fonction utilitaire pour les appels API avec gestion d'erreur robuste
+  async function apiCall(url, options = {}) {
+    try {
+      console.log(` Appel API: ${API_BASE + url}`);
+      
+      const response = await fetch(API_BASE + url, {
+        headers,
+        ...options
+      });
+      
+      // Vérifier si c'est du JSON
+      const contentType = response.headers.get('content-type');
+      console.log(` Statut: ${response.status}, Content-Type: ${contentType}`);
+      
+      if (!response.ok) {
+        throw new Error(`Erreur HTTP ${response.status}`);
+      }
+      
+      // Vérifier si la réponse est vide
+      const text = await response.text();
+      if (!text.trim()) {
+        console.warn(' Réponse vide de l\'API');
+        return { data: null, success: true };
+      }
+      
+      // Vérifier si c'est du HTML (erreur de routage)
+      if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<!--') || text.includes('<!DOCTYPE')) {
+        console.warn(' L\'API retourne du HTML au lieu du JSON - Route probablement non implémentée');
+        throw new Error('Route API non implémentée');
+      }
+      
+      // Essayer de parser en JSON
+      try {
+        const data = JSON.parse(text);
+        console.log(` Réponse API valide pour ${url}`);
+        return data;
+      } catch (parseError) {
+        console.error('❌ Erreur parsing JSON:', parseError);
+        console.log(' Contenu de la réponse:', text.substring(0, 200));
+        throw new Error('Réponse non-JSON du serveur');
+      }
+      
+    } catch (error) {
+      console.error(`❌ Erreur API ${url}:`, error);
+      throw error;
+    }
+  }
+
+  // GESTION DE LA DÉCONNEXION ET PROFIL
+
+  btnLogout.addEventListener("click", ()=>{ 
+    localStorage.removeItem("mec_token"); 
+    localStorage.removeItem("mec_role"); 
+    window.location.href = "login.html"; 
+  });
+  
+  btnProfile.addEventListener("click", ()=> window.location.href = "profile.html");
+
+  // NOUVELLES FONCTIONNALITÉS PARTICIPANT
+
+  // Charger les soldes avec fallback
+  window.loadBalances = async function() {
+    try {
+      const data = await apiCall("/api/participants/balances");
+      const balances = data.data || {};
+      
+      document.getElementById('tontineBalance').textContent = (balances.tontine_balance || 0) + ' XOF';
+      document.getElementById('corridorBalance').textContent = (balances.corridor_balance || 0) + ' XOF';
+      
+    } catch (err) {
+      console.warn('Chargement soldes échoué, utilisation des valeurs par défaut');
+      document.getElementById('tontineBalance').textContent = '0 XOF';
+      document.getElementById('corridorBalance').textContent = '0 XOF';
+    }
+  }
+
+  // Charger les prochains paiements avec fallback
+  window.loadUpcomingPayments = async function() {
+    try {
+      const data = await apiCall("/api/participants/upcoming-payments");
+      const payments = data.data || [];
+      
+      const paymentsEl = document.getElementById('upcomingPayments');
+      if (payments.length === 0) {
+        paymentsEl.innerHTML = '<div class="text-center text-muted">Aucun paiement à venir</div>';
+        return;
+      }
+      
+      paymentsEl.innerHTML = payments.map(payment => `
+        <div class="border rounded p-2 mb-2">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <strong>${payment.name}</strong>
+              <div class="small text-muted">${payment.type === 'tontine' ? 'Tontine' : 'Corridor'}</div>
+            </div>
+            <div class="text-end">
+              <div class="fw-bold">${payment.amount} XOF</div>
+              <div class="small text-muted">${new Date(payment.due_date).toLocaleDateString('fr-FR')}</div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+      
+    } catch (err) {
+      console.warn('Chargement paiements échoué');
+      document.getElementById('upcomingPayments').innerHTML = `
+        <div class="text-center text-muted py-3">
+          <i class="bi bi-info-circle"></i>
+          <div class="small mt-2">Fonctionnalité en cours de développement</div>
+        </div>
+      `;
+    }
+  }
+
+  // Charger les transactions avec fallback
+  window.loadRecentTransactions = async function() {
+    try {
+      const data = await apiCall("/api/participants/transactions");
+      const transactions = data.data || [];
+      
+      const transactionsEl = document.getElementById('recentTransactions');
+      if (transactions.length === 0) {
+        transactionsEl.innerHTML = '<div class="text-center text-muted">Aucune transaction</div>';
+        return;
+      }
+      
+      transactionsEl.innerHTML = transactions.slice(0, 5).map(transaction => `
+        <div class="border rounded p-2 mb-2">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <strong>${transaction.description}</strong>
+              <div class="small text-muted">${new Date(transaction.date).toLocaleDateString('fr-FR')}</div>
+            </div>
+            <div class="text-end">
+              <div class="fw-bold ${transaction.type === 'credit' ? 'text-success' : 'text-danger'}">
+                ${transaction.type === 'credit' ? '+' : '-'}${transaction.amount} XOF
+              </div>
+              <div class="small text-muted">${transaction.status}</div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+      
+    } catch (err) {
+      console.warn('Chargement transactions échoué');
+      document.getElementById('recentTransactions').innerHTML = `
+        <div class="text-center text-muted py-3">
+          <i class="bi bi-info-circle"></i>
+          <div class="small mt-2">Fonctionnalité en cours de développement</div>
+        </div>
+      `;
+    }
+  }
+
+  // Modal de paiement rapide
+  window.showPaymentModal = async function() {
+    try {
+      const data = await apiCall("/api/participants/my-tontines");
+      const myTontines = data.data || [];
+      
+      const selectEl = document.getElementById('quickPaymentSelection');
+      selectEl.innerHTML = '<option value="">Sélectionnez...</option>' +
+        myTontines.map(item => `
+          <option value="${item.id}" data-type="${item.type || 'tontine'}" data-amount="${item.montant_par_participant || item.bareme || 0}">
+            ${item.name} (${item.type || 'tontine'}) - ${item.montant_par_participant || item.bareme || 0} XOF
+          </option>
+        `).join('');
+      
+      const modal = new bootstrap.Modal(document.getElementById('paymentModal'));
+      modal.show();
+      
+    } catch (err) {
+      console.error('Erreur:', err);
+      alert('Erreur lors du chargement des données');
+    }
+  }
+
+  // Traitement du paiement rapide
+  window.processQuickPayment = async function() {
+    const selectEl = document.getElementById('quickPaymentSelection');
+    const amountEl = document.getElementById('quickPaymentAmount');
+    
+    const selectedOption = selectEl.options[selectEl.selectedIndex];
+    const itemId = selectEl.value;
+    const itemType = selectedOption.getAttribute('data-type');
+    const amount = amountEl.value;
+    
+    if (!itemId || !amount) {
+      alert('Veuillez sélectionner un élément et saisir un montant');
+      return;
+    }
+    
+    try {
+      const response = await fetch(API_BASE + "/api/participants/pay", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          item_id: parseInt(itemId),
+          item_type: itemType,
+          amount: parseFloat(amount),
+          method: 'mobile_money'
+        })
+      });
+      
+      // Vérifier si c'est du JSON
+      const contentType = response.headers.get('content-type');
+      if (!contentType?.includes('application/json')) {
+        throw new Error('Route API non trouvée');
+      }
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Erreur paiement');
+      }
+      
+      alert(' Paiement effectué avec succès');
+      const modal = bootstrap.Modal.getInstance(document.getElementById('paymentModal'));
+      modal.hide();
+      
+      // Recharger les données
+      window.loadBalances();
+      window.loadRecentTransactions();
+      window.loadUpcomingPayments();
+      
+    } catch (err) {
+      console.error('Erreur paiement:', err);
+      if (err.message.includes('Route API non trouvée')) {
+        alert(' Fonctionnalité de paiement temporairement indisponible');
+      } else {
+        alert('❌ ' + err.message);
+      }
+    }
+  }
+
+  // Modal de réception de fonds
+  window.showReceiptModal = async function() {
+    try {
+      const data = await apiCall("/api/participants/fund-receipt");
+      const receiptInfo = data.data || {};
+      
+      const contentEl = document.getElementById('receiptContent');
+      
+      if (receiptInfo.can_receive) {
+        contentEl.innerHTML = `
+          <div class="text-center">
+            <i class="bi bi-check-circle text-success fs-1"></i>
+            <h4 class="mt-3">Félicitations !</h4>
+            <p>Vous pouvez recevoir les fonds de <strong>${receiptInfo.item_name}</strong></p>
+            <div class="card fund-receipt p-3 mt-3">
+              <h3>${receiptInfo.amount} XOF</h3>
+              <small>Montant à recevoir</small>
+            </div>
+            <button class="btn btn-success btn-lg mt-3 w-100" onclick="window.receiveFunds(${receiptInfo.item_id}, '${receiptInfo.item_type}')">
+              <i class="bi bi-wallet2"></i> Recevoir les Fonds
+            </button>
+          </div>
+        `;
+      } else {
+        contentEl.innerHTML = `
+          <div class="text-center">
+            <i class="bi bi-hourglass-split text-warning fs-1"></i>
+            <h4 class="mt-3">En attente</h4>
+            <p>${receiptInfo.message || "Ce n'est pas encore votre tour de recevoir les fonds."}</p>
+            <div class="alert alert-info mt-3">
+              <i class="bi bi-info-circle"></i>
+              Prochain bénéficiaire: ${receiptInfo.next_recipient || 'Non déterminé'}
+            </div>
+          </div>
+        `;
+      }
+      
+      const modal = new bootstrap.Modal(document.getElementById('receiptModal'));
+      modal.show();
+      
+    } catch (err) {
+      console.error('Erreur:', err);
+      alert('Erreur lors du chargement des informations');
+    }
+  }
+
+  // Recevoir les fonds
+  window.receiveFunds = async function(itemId, itemType) {
+    try {
+      const response = await fetch(API_BASE + "/api/participants/receive-funds", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          item_id: itemId,
+          item_type: itemType
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Erreur réception fonds');
+      }
+      
+      alert('Fonds reçus avec succès');
+      const modal = bootstrap.Modal.getInstance(document.getElementById('receiptModal'));
+      modal.hide();
+      
+      // Recharger les données
+      window.loadBalances();
+      window.loadRecentTransactions();
+      
+    } catch (err) {
+      console.error('Erreur réception fonds:', err);
+      alert('❌ ' + err.message);
+    }
+  }
+
+  // Gestion du formulaire de paiement principal
+  paymentTypeSelect.addEventListener('change', async function() {
+    const type = this.value;
+    
+    if (!type) {
+      paymentSelection.innerHTML = '<option value="">Sélectionnez d\'abord le type</option>';
+      return;
+    }
+    
+    try {
+      const data = await apiCall("/api/participants/my-tontines");
+      const items = data.data || [];
+      
+      const filteredItems = items.filter(item => 
+        (type === 'tontine' && (!item.type || item.type === 'tontine')) ||
+        (type === 'corridor' && item.type === 'corridor')
+      );
+      
+      paymentSelection.innerHTML = '<option value="">Sélectionnez...</option>' +
+        filteredItems.map(item => `
+          <option value="${item.id}" data-type="${item.type || 'tontine'}" data-amount="${item.montant_par_participant || item.bareme || 0}">
+            ${item.name} - ${item.montant_par_participant || item.bareme || 0} XOF
+          </option>
+        `).join('');
+      
+    } catch (err) {
+      console.error('Erreur:', err);
+      paymentSelection.innerHTML = '<option value="">Erreur de chargement</option>';
+    }
+  });
+
+  // Soumission du formulaire de paiement principal
+  document.getElementById('paymentForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const itemId = paymentSelection.value;
+    const amount = document.getElementById('paymentAmount').value;
+    const method = document.getElementById('paymentMethod').value;
+    const selectedOption = paymentSelection.options[paymentSelection.selectedIndex];
+    const itemType = selectedOption.getAttribute('data-type');
+    
+    if (!itemId || !amount) {
+      alert('Veuillez remplir tous les champs');
+      return;
+    }
+    
+    try {
+      const response = await fetch(API_BASE + "/api/participants/pay", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          item_id: parseInt(itemId),
+          item_type: itemType,
+          amount: parseFloat(amount),
+          method: method
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Erreur paiement');
+      }
+      
+      alert('Paiement effectué avec succès');
+      this.reset();
+      paymentSelection.innerHTML = '<option value="">Sélectionnez d\'abord le type</option>';
+      
+      // Recharger les données
+      window.loadBalances();
+      window.loadRecentTransactions();
+      window.loadUpcomingPayments();
+      window.loadPaymentHistory();
+      
+    } catch (err) {
+      console.error('Erreur paiement:', err);
+      alert('❌ ' + err.message);
+    }
+  });
+
+  // Charger l'historique des paiements avec fallback
+  window.loadPaymentHistory = async function() {
+    try {
+      const data = await apiCall("/api/participants/payment-history");
+      const payments = data.data || [];
+      
+      const historyEl = document.getElementById('paymentHistory');
+      if (payments.length === 0) {
+        historyEl.innerHTML = '<div class="text-center text-muted">Aucun paiement effectué</div>';
+        return;
+      }
+      
+      historyEl.innerHTML = payments.map(payment => `
+        <div class="border rounded p-2 mb-2">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <strong>${payment.item_name}</strong>
+              <div class="small text-muted">
+                ${payment.item_type} • ${new Date(payment.payment_date).toLocaleDateString('fr-FR')}
+              </div>
+            </div>
+            <div class="text-end">
+              <div class="fw-bold text-danger">-${payment.amount} XOF</div>
+              <div class="small text-muted ${payment.status === 'completed' ? 'text-success' : 'text-warning'}">
+                ${payment.status === 'completed' ? 'Complété' : 'En attente'}
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+      
+    } catch (err) {
+      console.warn('Chargement historique échoué');
+      document.getElementById('paymentHistory').innerHTML = `
+        <div class="text-center text-muted py-3">
+          <i class="bi bi-info-circle"></i>
+          <div class="small mt-2">Fonctionnalité en cours de développement</div>
+        </div>
+      `;
+    }
+  }
+
+  // FONCTIONS EXISTANTES
+
+  // Fonction pour afficher les détails d'une tontine
+  window.showTontineDetails = async (tontineId) => {
+    try {
+      console.log(`🔍 Chargement détails tontine ${tontineId}`);
+      
+      const response = await fetch(API_BASE + `/api/tontines/${tontineId}`, {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+
+      if (!response.ok) {
+        throw new Error('Erreur lors du chargement des détails');
+      }
+
+      const data = await response.json();
+      const tontine = data.data;
+
+      // Créer le contenu du modal
+      const modalContent = `
+        <div class="modal-header">
+          <h5 class="modal-title">Détails de la Tontine</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-12">
+              <h4>${escapeHtml(tontine.name)}</h4>
+              ${tontine.description ? `<p class="text-muted">${escapeHtml(tontine.description)}</p>` : ''}
+            </div>
+          </div>
+          
+          <div class="row mt-3">
+            <div class="col-md-6">
+              <div class="card bg-light">
+                <div class="card-body">
+                  <h6 class="card-title">Informations Générales</h6>
+                  <table class="table table-sm table-borderless">
+                    <tr>
+                      <td><strong>Organisateur:</strong></td>
+                      <td>${tontine.owner_prenom || ''} ${tontine.owner_nom || ''}</td>
+                    </tr>
+                    ${tontine.bareme ? `
+                    <tr>
+                      <td><strong>Barème:</strong></td>
+                      <td>${tontine.bareme} XOF</td>
+                    </tr>
+                    ` : ''}
+                    ${tontine.montant_par_participant ? `
+                    <tr>
+                      <td><strong>Montant/participant:</strong></td>
+                      <td>${tontine.montant_par_participant} XOF</td>
+                    </tr>
+                    ` : ''}
+                    ${tontine.duree_jours ? `
+                    <tr>
+                      <td><strong>Durée:</strong></td>
+                      <td>${tontine.duree_jours} jours</td>
+                    </tr>
+                    ` : ''}
+                    ${tontine.date ? `
+                    <tr>
+                      <td><strong>Date:</strong></td>
+                      <td>${new Date(tontine.date).toLocaleDateString('fr-FR')}</td>
+                    </tr>
+                    ` : ''}
+                  </table>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-md-6">
+              <div class="card bg-light">
+                <div class="card-body">
+                  <h6 class="card-title">Contact de l'Organisateur</h6>
+                  <div class="contact-info">
+                    <div class="d-flex align-items-center mb-2">
+                      <i class="bi bi-person me-2"></i>
+                      <strong>${tontine.owner_prenom || ''} ${tontine.owner_nom || ''}</strong>
+                    </div>
+                    ${tontine.owner_phone ? `
+                    <div class="d-flex align-items-center mb-2">
+                      <i class="bi bi-telephone me-2"></i>
+                      <span>${tontine.owner_phone}</span>
+                    </div>
+                    ` : ''}
+                    ${tontine.owner_email ? `
+                    <div class="d-flex align-items-center mb-2">
+                      <i class="bi bi-envelope me-2"></i>
+                      <span>${tontine.owner_email}</span>
+                    </div>
+                    ` : ''}
+                    ${(!tontine.owner_phone && !tontine.owner_email) ? `
+                    <p class="text-muted small mb-0">
+                      <i class="bi bi-info-circle"></i>
+                      Contactez l'organisateur via le système de messages pour obtenir ses coordonnées.
+                    </p>
+                    ` : ''}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row mt-3">
+            <div class="col-12">
+              <div class="card bg-light">
+                <div class="card-body">
+                  <h6 class="card-title">Accès</h6>
+                  <div class="mb-3">
+                    <p class="text-muted small">
+                      <i class="bi bi-info-circle"></i>
+                      Le token d'accès n'est visible que par l'organisateur de la tontine.
+                      Demandez-lui de vous le communiquer pour rejoindre directement.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          ${tontine.commission ? `
+          <div class="row mt-3">
+            <div class="col-12">
+              <div class="alert alert-info">
+                <i class="bi bi-info-circle"></i>
+                <strong>Commission:</strong> ${tontine.commission} XOF
+              </div>
+            </div>
+          </div>
+          ` : ''}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+          <button type="button" class="btn btn-primary" onclick="window.requestJoinTontine(${tontine.id})">
+            <i class="bi bi-send"></i> Demander à rejoindre
+          </button>
+        </div>
+      `;
+
+      // Créer ou mettre à jour le modal
+      let modal = document.getElementById('detailsModal');
+      if (!modal) {
+        modal = document.createElement('div');
+        modal.className = 'modal fade';
+        modal.id = 'detailsModal';
+        modal.tabIndex = -1;
+        modal.innerHTML = `
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content" id="detailsModalContent">
+              ${modalContent}
+            </div>
+          </div>
+        `;
+        document.body.appendChild(modal);
+      } else {
+        document.getElementById('detailsModalContent').innerHTML = modalContent;
+      }
+
+      // Afficher le modal
+      const bootstrapModal = new bootstrap.Modal(modal);
+      bootstrapModal.show();
+
+    } catch (err) {
+      console.error(' Erreur chargement détails:', err);
+      alert('Erreur lors du chargement des détails: ' + err.message);
+    }
+  };
+
+  // Fonction pour afficher les détails d'un corridor
+  window.showCorridorDetails = async (corridorId) => {
+    try {
+      console.log(` Chargement détails corridor ${corridorId}`);
+      
+      const response = await fetch(API_BASE + `/api/corridors/${corridorId}`, {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+
+      if (!response.ok) {
+        throw new Error('Erreur lors du chargement des détails');
+      }
+
+      const data = await response.json();
+      const corridor = data.data;
+
+      // Créer le contenu du modal
+      const modalContent = `
+        <div class="modal-header">
+          <h5 class="modal-title">Détails du Corridor</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-12">
+              <h4>${escapeHtml(corridor.name)}</h4>
+            </div>
+          </div>
+          
+          <div class="row mt-3">
+            <div class="col-md-6">
+              <div class="card bg-light">
+                <div class="card-body">
+                  <h6 class="card-title">Informations Générales</h6>
+                  <table class="table table-sm table-borderless">
+                    <tr>
+                      <td><strong>Organisateur:</strong></td>
+                      <td>${corridor.owner_prenom || ''} ${corridor.owner_nom || ''}</td>
+                    </tr>
+                    ${corridor.bareme ? `
+                    <tr>
+                      <td><strong>Barème:</strong></td>
+                      <td>${corridor.bareme} XOF</td>
+                    </tr>
+                    ` : ''}
+                    ${corridor.commission ? `
+                    <tr>
+                      <td><strong>Commission:</strong></td>
+                      <td>${corridor.commission} XOF</td>
+                    </tr>
+                    ` : ''}
+                    <tr>
+                      <td><strong>Créé le:</strong></td>
+                      <td>${new Date(corridor.created_at).toLocaleDateString('fr-FR')}</td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-md-6">
+              <div class="card bg-light">
+                <div class="card-body">
+                  <h6 class="card-title">Contact de l'Organisateur</h6>
+                  <div class="contact-info">
+                    <div class="d-flex align-items-center mb-2">
+                      <i class="bi bi-person me-2"></i>
+                      <strong>${corridor.owner_prenom || ''} ${corridor.owner_nom || ''}</strong>
+                    </div>
+                    ${corridor.owner_phone ? `
+                    <div class="d-flex align-items-center mb-2">
+                      <i class="bi bi-telephone me-2"></i>
+                      <span>${corridor.owner_phone}</span>
+                    </div>
+                    ` : ''}
+                    ${corridor.owner_email ? `
+                    <div class="d-flex align-items-center mb-2">
+                      <i class="bi bi-envelope me-2"></i>
+                      <span>${corridor.owner_email}</span>
+                    </div>
+                    ` : ''}
+                    ${corridor.phone ? `
+                    <div class="d-flex align-items-center mb-2">
+                      <i class="bi bi-telephone me-2"></i>
+                      <span>${corridor.phone}</span>
+                    </div>
+                    ` : ''}
+                    ${(!corridor.owner_phone && !corridor.owner_email && !corridor.phone) ? `
+                    <p class="text-muted small mb-0">
+                      <i class="bi bi-info-circle"></i>
+                      Contactez l'organisateur via le système de messages pour obtenir ses coordonnées.
+                    </p>
+                    ` : ''}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row mt-3">
+            <div class="col-12">
+              <div class="card bg-light">
+                <div class="card-body">
+                  <h6 class="card-title">Description</h6>
+                  <p class="card-text">
+                    ${corridor.description ? escapeHtml(corridor.description) : 
+                      '<span class="text-muted">Aucune description fournie</span>'}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+          <button type="button" class="btn btn-primary" onclick="window.requestJoinCorridor(${corridor.id})">
+            <i class="bi bi-send"></i> Demander à rejoindre
+          </button>
+        </div>
+      `;
+
+      // Créer ou mettre à jour le modal
+      let modal = document.getElementById('detailsModal');
+      if (!modal) {
+        modal = document.createElement('div');
+        modal.className = 'modal fade';
+        modal.id = 'detailsModal';
+        modal.tabIndex = -1;
+        modal.innerHTML = `
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content" id="detailsModalContent">
+              ${modalContent}
+            </div>
+          </div>
+        `;
+        document.body.appendChild(modal);
+      } else {
+        document.getElementById('detailsModalContent').innerHTML = modalContent;
+      }
+
+      // Afficher le modal
+      const bootstrapModal = new bootstrap.Modal(modal);
+      bootstrapModal.show();
+
+    } catch (err) {
+      console.error(' Erreur chargement détails corridor:', err);
+      alert('Erreur lors du chargement des détails: ' + err.message);
+    }
+  };
+
+  // Fonction pour rejoindre avec token
+  window.joinWithToken = async (tokenValue) => {
+    try {
+      const response = await fetch(API_BASE + "/api/tontines/join", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + token
+        },
+        body: JSON.stringify({ token: tokenValue })
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || "Erreur lors de la jointure");
+      }
+
+      // Fermer le modal
+      const modal = bootstrap.Modal.getInstance(document.getElementById('detailsModal'));
+      if (modal) {
+        modal.hide();
+      }
+
+      alert(" " + data.message);
+      loadAvailable(); // Recharger la liste
+      window.loadMyTontines(); // Recharger mes tontines
+      
+    } catch (err) {
+      console.error(' Erreur jointure avec token:', err);
+      alert("❌ " + err.message);
+    }
+  };
+
+  // Fonction utilitaire pour copier le token (conservée mais non utilisée pour les participants)
+  window.copyToken = (tokenValue) => {
+    navigator.clipboard.writeText(tokenValue).then(() => {
+      // Afficher un message de succès
+      const originalButton = event.target;
+      const originalHTML = originalButton.innerHTML;
+      
+      originalButton.innerHTML = '<i class="bi bi-check"></i>';
+      originalButton.classList.remove('btn-outline-secondary');
+      originalButton.classList.add('btn-success');
+      
+      setTimeout(() => {
+        originalButton.innerHTML = originalHTML;
+        originalButton.classList.remove('btn-success');
+        originalButton.classList.add('btn-outline-secondary');
+      }, 2000);
+    });
+  };
+
+  // Charger les tontines disponibles
+  async function loadAvailable() {
+    try {
+      const res = await fetch(API_BASE + "/api/participants/available", { headers });
+      if (!res.ok) { 
+        tontinesEl.innerHTML = "Impossible de charger."; 
+        corridorsEl.innerHTML = ""; 
+        return; 
+      }
+      
+      const data = await res.json();
+      const t = data.data?.tontines || data.tontines || [];
+      const c = data.data?.corridors || data.corridors || [];
+
+      tontinesEl.innerHTML = t.length ? t.map(x => renderTontineCard(x)).join("") : "<div class='small-muted'>Aucune tontine disponible.</div>";
+      corridorsEl.innerHTML = c.length ? c.map(x => renderCorridorCard(x)).join("") : "<div class='small-muted'>Aucun corridor disponible.</div>";
+    } catch (err) {
+      console.error(err);
+      tontinesEl.innerHTML = "Erreur réseau";
+      corridorsEl.innerHTML = "";
+    }
+  }
+
+  function renderTontineCard(t) {
+    return `<div class="border rounded p-3 mb-3">
+      <div class="d-flex justify-content-between align-items-start">
+        <div class="flex-grow-1">
+          <strong>${escapeHtml(t.name)}</strong>
+          <div class="small-muted">${escapeHtml(t.description||"")}</div>
+          <div class="small-muted">
+            <i class="bi bi-person"></i> Organisateur: ${escapeHtml(t.owner_prenom || "")} ${escapeHtml(t.owner_nom || "")}
+          </div>
+          <div class="small-muted">
+            ${t.bareme ? `<i class="bi bi-currency-exchange"></i> ${t.bareme} XOF` : ''}
+            ${t.date ? ` • <i class="bi bi-calendar"></i> ${t.date.split("T")[0]}` : ''}
+          </div>
+        </div>
+        <div class="text-end">
+          <div class="d-flex gap-1">
+            <button class="btn btn-info btn-sm" onclick="window.showTontineDetails(${t.id})">
+              <i class="bi bi-eye"></i> Détails
+            </button>
+            <button class="btn btn-primary btn-sm" onclick="window.requestJoinTontine(${t.id})">
+              <i class="bi bi-send"></i> Demander
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function renderCorridorCard(c) {
+    return `<div class="border rounded p-3 mb-3 d-flex justify-content-between align-items-center">
+      <div class="flex-grow-1">
+        <strong>${escapeHtml(c.name)}</strong>
+        <div class="small-muted">
+          <i class="bi bi-person"></i> Organisateur: ${escapeHtml(c.owner_prenom || "")} ${escapeHtml(c.owner_nom || "")}
+        </div>
+        <div class="small-muted">
+          ${c.bareme ? `<i class="bi bi-currency-exchange"></i> ${c.bareme} XOF` : ''}
+        </div>
+      </div>
+      <div class="d-flex gap-1">
+        <button class="btn btn-info btn-sm" onclick="window.showCorridorDetails(${c.id})">
+          <i class="bi bi-eye"></i> Détails
+        </button>
+        <button class="btn btn-primary btn-sm" onclick="window.requestJoinCorridor(${c.id})">
+          <i class="bi bi-send"></i> Demander
+        </button>
+      </div>
+    </div>`;
+  }
+
+  // Charger mes tontines
+  window.loadMyTontines = async function() {
+    try {
+      const res = await fetch(API_BASE + "/api/participants/my-tontines", { headers });
+      if (!res.ok) {
+        myTontinesList.innerHTML = "<div class='text-center text-muted'>Erreur de chargement</div>";
+        return;
+      }
+
+      const data = await res.json();
+      const myTontines = data.data || [];
+
+      if (myTontines.length === 0) {
+        myTontinesList.innerHTML = `
+          <div class="text-center text-muted py-4">
+            <i class="bi bi-piggy-bank fs-1"></i>
+            <div class="mt-2">Vous n'êtes membre d'aucune tontine</div>
+            <small>Rejoignez une tontine via l'onglet "Découvrir"</small>
+          </div>
+        `;
+        return;
+      }
+
+      myTontinesList.innerHTML = myTontines.map(tontine => `
+        <div class="border rounded p-3 mb-3">
+          <div class="d-flex justify-content-between align-items-start">
+            <div class="flex-grow-1">
+              <strong>${escapeHtml(tontine.name)}</strong>
+              <div class="small-muted">${escapeHtml(tontine.description || '')}</div>
+              <div class="small text-muted">
+                Organisateur: ${tontine.owner_prenom} ${tontine.owner_nom}
+                • Rejoint le: ${new Date(tontine.joined_at).toLocaleDateString('fr-FR')}
+              </div>
+              <div class="mt-2">
+                <span class="badge ${tontine.payment_status === 'completed' ? 'bg-success' : 'bg-warning'}">
+                  ${tontine.payment_status === 'completed' ? 'Paiement terminé' : 'Paiement en attente'}
+                </span>
+              </div>
+            </div>
+            <div class="d-flex gap-1">
+              <button class="btn btn-outline-info btn-sm" onclick="window.viewTontineMembers(${tontine.id})">
+                <i class="bi bi-people"></i> Membres
+              </button>
+              <button class="btn btn-outline-primary btn-sm" onclick="window.messageOrganizer(${tontine.owner_id}, ${tontine.id})">
+                <i class="bi bi-envelope"></i> Contacter
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      // Mettre à jour les sélecteurs de messages
+      updateMessageSelectors(myTontines);
+    } catch (err) {
+      console.error('Erreur chargement mes tontines:', err);
+      myTontinesList.innerHTML = "<div class='text-center text-danger'>Erreur de chargement</div>";
+    }
+  }
+
+  function updateMessageSelectors(tontines) {
+    const tontineSelect = document.getElementById('messageToTontine');
+    const organizerSelect = document.getElementById('messageToOrganizer');
+    
+    if (tontineSelect) {
+      tontineSelect.innerHTML = '<option value="">Sélectionnez une tontine</option>' +
+        tontines.map(t => `<option value="${t.id}" data-organizer="${t.owner_id}">${escapeHtml(t.name)}</option>`).join('');
+    }
+
+    if (organizerSelect) {
+      organizerSelect.innerHTML = '<option value="">Sélectionnez un organisateur</option>' +
+        tontines.map(t => `<option value="${t.owner_id}">${t.owner_prenom} ${t.owner_nom} - ${escapeHtml(t.name)}</option>`).join('');
+    }
+
+    // Mettre à jour l'organisateur quand la tontine change
+    if (tontineSelect && organizerSelect) {
+      tontineSelect.addEventListener('change', function(event) {
+        const selectedOption = this.options[this.selectedIndex];
+        const organizerId = selectedOption.getAttribute('data-organizer');
+        if (organizerId) {
+          organizerSelect.value = organizerId;
+        }
+      });
+    }
+  }
+
+  // Fonctions globales
+  window.requestJoinTontine = async (tontineId) => {
+    try {
+      const res = await fetch(API_BASE + "/api/tontines/request-join", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ tontineId })
+      });
+      
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.message || "Erreur lors de la demande");
+        return;
+      }
+      
+      alert("✅ " + data.message);
+      loadNotifications();
+    } catch (err) {
+      console.error(err);
+      alert("Erreur réseau lors de la demande");
+    }
+  };
+
+  window.requestJoinCorridor = async (corridorId) => {
+    try {
+      const res = await fetch(API_BASE + "/api/participants/join/corridor", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ corridorId })
+      });
+      
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.message || "Erreur lors de la demande");
+        return;
+      }
+      
+      alert("✅ " + data.message);
+      loadNotifications();
+    } catch (err) {
+      console.error(err);
+      alert("Erreur réseau lors de la demande");
+    }
+  };
+
+  window.viewTontineMembers = async (tontineId) => {
+    try {
+      const res = await fetch(API_BASE + `/api/participants/tontines/${tontineId}/members`, { headers });
+      if (!res.ok) {
+        alert('Erreur lors du chargement des membres');
+        return;
+      }
+
+      const data = await res.json();
+      const members = data.data || [];
+
+      const membersHtml = members.map(member => `
+        <div class="border rounded p-2 mb-2 ${member.payment_status === 'completed' ? 'payment-completed' : 'payment-pending'}">
+          <strong>${member.prenom} ${member.nom}</strong>
+          <div class="small text-muted">${member.email}</div>
+          <div class="small">
+            Statut: 
+            <span class="badge ${member.payment_status === 'completed' ? 'bg-success' : 'bg-warning'}">
+              ${member.payment_status === 'completed' ? 'Payé' : 'En attente'}
+            </span>
+            • Rejoint le: ${new Date(member.joined_at).toLocaleDateString('fr-FR')}
+          </div>
+        </div>
+      `).join('');
+
+      document.getElementById('paymentStatusSection').innerHTML = `
+        <h6>Membres de la tontine</h6>
+        ${membersHtml}
+      `;
+
+      // Basculer vers l'onglet messages
+      const tab = new bootstrap.Tab(document.querySelector('#participantTabs a[href="#tab-messages"]'));
+      tab.show();
+    } catch (err) {
+      console.error('Erreur chargement membres:', err);
+      alert('Erreur lors du chargement des membres');
+    }
+  };
+
+  window.messageOrganizer = (organizerId, tontineId) => {
+    document.getElementById('messageToOrganizer').value = organizerId;
+    document.getElementById('messageToTontine').value = tontineId;
+    
+    const tab = new bootstrap.Tab(document.querySelector('#participantTabs a[href="#tab-messages"]'));
+    tab.show();
+    
+    document.querySelector('textarea').focus();
+  };
+
+  // join by token form
+  document.getElementById("joinTokenForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const tokenVal = e.target.token.value.trim();
+    if (!tokenVal) {
+      document.getElementById("joinTokenMsg").innerText = "Veuillez fournir un jeton.";
+      return;
+    }
+    
+    try {
+      const res = await fetch(API_BASE + "/api/tontines/join", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ token: tokenVal })
+      });
+      
+      const data = await res.json();
+      if (!res.ok) {
+        document.getElementById("joinTokenMsg").innerHTML = `<span class="text-danger">${data.message || "Erreur"}</span>`;
+        return;
+      }
+      
+      document.getElementById("joinTokenMsg").innerHTML = '<span class="text-success"> Vous avez rejoint la tontine !</span>';
+      e.target.reset();
+      loadNotifications();
+      window.loadMyTontines();
+      
+      setTimeout(() => {
+        document.getElementById("joinTokenMsg").innerText = "";
+      }, 5000);
+    } catch (err) {
+      document.getElementById("joinTokenMsg").innerHTML = '<span class="text-danger">Erreur réseau</span>';
+    }
+  });
+
+  // CORRECTION : Envoyer un message avec les bons noms de champs
+  document.getElementById("sendMessageForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    
+    const organizerId = document.getElementById("messageToOrganizer").value;
+    const tontineId = document.getElementById("messageToTontine").value;
+    const messageTextarea = e.target.querySelector('textarea');
+    const messageContent = messageTextarea.value.trim();
+    
+    // Validation
+    if (!organizerId) {
+      alert("Veuillez sélectionner un organisateur");
+      return;
+    }
+    
+    if (!messageContent) {
+      alert("Veuillez écrire un message");
+      messageTextarea.focus();
+      return;
+    }
+    
+    try {
+      console.log(' Envoi message:', { organizerId, tontineId, messageContent });
+      
+      const res = await fetch(API_BASE + "/api/messages/send", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          receiver_id: parseInt(organizerId), // CORRECTION: receiver_id au lieu de receiverId
+          tontine_id: tontineId ? parseInt(tontineId) : null, // CORRECTION: tontine_id au lieu de tontineId
+          message: messageContent
+        })
+      });
+      
+      const data = await res.json();
+      
+      if (!res.ok) {
+        console.error(' Erreur API:', data);
+        alert(data.message || "Erreur lors de l'envoi du message");
+        return;
+      }
+      
+      alert(" Message envoyé avec succès");
+      messageTextarea.value = '';
+      loadNotifications();
+      loadReceivedMessages(); // Recharger les messages
+      
+    } catch (err) {
+      console.error(' Erreur envoi message:', err);
+      alert("Erreur réseau lors de l'envoi du message");
+    }
+  });
+
+  // GESTION DES NOTIFICATIONS
+
+  // Fonction pour charger les notifications
+  async function loadNotifications() {
+    try {
+      console.log(' Chargement des notifications...');
+      
+      const response = await fetch(API_BASE + "/api/notifications", { 
+        method: "GET",
+        headers: headers
+      });
+
+      if (!response.ok) {
+        throw new Error('Erreur lors du chargement des notifications');
+      }
+
+      const data = await response.json();
+      const notifications = data.data || [];
+      
+      console.log(` ${notifications.length} notification(s) chargée(s)`);
+      
+      // Mettre à jour le compteur
+      updateNotificationCount(notifications.length);
+      
+      // Afficher les notifications
+      displayNotifications(notifications);
+      
+    } catch (err) {
+      console.error(' Erreur chargement notifications:', err);
+      displayNotificationError(err.message);
+    }
+  }
+
+  // Fonction pour afficher les notifications
+  function displayNotifications(notifications) {
+    const notificationsEl = document.getElementById('notifications');
+    
+    if (notifications.length === 0) {
+      notificationsEl.innerHTML = `
+        <div class="text-center text-muted py-4">
+          <i class="bi bi-bell-slash fs-2"></i>
+          <div class="mt-2">Aucune notification</div>
+          <small class="text-muted">Vous serez alerté des nouvelles activités</small>
+        </div>
+      `;
+      return;
+    }
+    
+    notificationsEl.innerHTML = notifications.map(notification => `
+      <div class="notification-item border-start border-3 border-primary ps-3 py-2 mb-2 bg-light rounded">
+        <div class="d-flex justify-content-between align-items-start">
+          <div class="flex-grow-1">
+            <div class="small fw-bold text-dark mb-1">${escapeHtml(notification.title || 'Notification')}</div>
+            <div class="small text-muted mb-1">${escapeHtml(notification.body || '')}</div>
+            <div class="small text-muted">
+              <i class="bi bi-clock"></i> 
+              ${formatNotificationDate(notification.created_at)}
+            </div>
+          </div>
+          <button class="btn btn-sm btn-outline-secondary ms-2" onclick="deleteSingleNotification(${notification.id})" title="Supprimer cette notification">
+            <i class="bi bi-x"></i>
+          </button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // Fonction pour formater la date des notifications
+  function formatNotificationDate(dateString) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffTime = Math.abs(now - date);
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+    const diffMinutes = Math.floor(diffTime / (1000 * 60));
+    
+    if (diffMinutes < 1) return 'À l\'instant';
+    if (diffMinutes < 60) return `Il y a ${diffMinutes} min`;
+    if (diffHours < 24) return `Il y a ${diffHours} h`;
+    if (diffDays === 1) return 'Hier';
+    if (diffDays < 7) return `Il y a ${diffDays} j`;
+    
+    return date.toLocaleDateString('fr-FR', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    });
+  }
+
+  // Fonction pour mettre à jour le compteur de notifications
+  function updateNotificationCount(count) {
+    const countEl = document.getElementById('notificationCount');
+    if (countEl) {
+      countEl.textContent = count;
+      if (count === 0) {
+        countEl.classList.remove('bg-primary');
+        countEl.classList.add('bg-secondary');
+      } else {
+        countEl.classList.remove('bg-secondary');
+        countEl.classList.add('bg-primary');
+      }
+    }
+  }
+
+  // Fonction pour afficher les erreurs de notifications
+  function displayNotificationError(errorMessage) {
+    const notificationsEl = document.getElementById('notifications');
+    notificationsEl.innerHTML = `
+      <div class="text-center text-danger py-3">
+        <i class="bi bi-exclamation-triangle fs-2"></i>
+        <div class="mt-2">Erreur de chargement</div>
+        <small class="text-muted">${errorMessage}</small>
+        <div class="mt-2">
+          <button class="btn btn-sm btn-outline-primary" onclick="loadNotifications()">
+            <i class="bi bi-arrow-clockwise"></i> Réessayer
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  // Fonction pour vider toutes les notifications
+  async function clearAllNotifications() {
+    if (!confirm("Êtes-vous sûr de vouloir supprimer toutes vos notifications ?\n\nCette action est irréversible et supprimera définitivement toutes vos alertes et messages système.")) {
+      return;
+    }
+
+    try {
+      const btnClear = document.getElementById('btnClearNotifications');
+      const originalContent = btnClear.innerHTML;
+      
+      // Afficher un indicateur de chargement
+      btnClear.innerHTML = '<i class="bi bi-arrow-repeat spinner-border spinner-border-sm"></i>';
+      btnClear.disabled = true;
+
+      console.log('Suppression de toutes les notifications...');
+      
+      const response = await fetch(API_BASE + "/api/notifications/clear-all", {
+        method: "DELETE",
+        headers: headers
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || "Erreur lors de la suppression des notifications");
+      }
+
+      // Restaurer le bouton
+      btnClear.innerHTML = originalContent;
+      btnClear.disabled = false;
+
+      console.log('Toutes les notifications supprimées');
+      
+      // Afficher le message de succès
+      alert(` ${data.message}`);
+      
+      // Recharger les notifications
+      await loadNotifications();
+      
+    } catch (err) {
+      console.error(' Erreur suppression notifications:', err);
+      
+      // Restaurer le bouton en cas d'erreur
+      const btnClear = document.getElementById('btnClearNotifications');
+      btnClear.innerHTML = '<i class="bi bi-trash"></i> Vider';
+      btnClear.disabled = false;
+      
+      alert(` ${err.message}`);
+    }
+  }
+
+  // Fonction pour supprimer une notification individuelle
+  async function deleteSingleNotification(notificationId) {
+    if (!confirm("Supprimer cette notification ?")) {
+      return;
+    }
+
+    try {
+      console.log(`Suppression de la notification ${notificationId}...`);
+      
+      const response = await fetch(API_BASE + `/api/notifications/${notificationId}`, {
+        method: "DELETE",
+        headers: headers
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || "Erreur lors de la suppression");
+      }
+
+      console.log('Notification supprimée');
+      
+      // Recharger les notifications
+      await loadNotifications();
+      
+    } catch (err) {
+      console.error('Erreur suppression notification:', err);
+      alert(`❌ ${err.message}`);
+    }
+  }
+
+  // Fonction pour actualiser les notifications
+  async function refreshNotifications() {
+    const btnRefresh = document.getElementById('btnRefreshNotifications');
+    const originalContent = btnRefresh.innerHTML;
+    
+    // Animation de rotation
+    btnRefresh.innerHTML = '<i class="bi bi-arrow-clockwise spinner-border spinner-border-sm"></i>';
+    
+    await loadNotifications();
+    
+    // Restaurer le contenu original
+    btnRefresh.innerHTML = originalContent;
+  }
+
+  // Initialisation des événements pour les notifications
+  function initNotificationEvents() {
+    const btnClear = document.getElementById('btnClearNotifications');
+    const btnRefresh = document.getElementById('btnRefreshNotifications');
+    
+    if (btnClear) {
+      btnClear.addEventListener('click', clearAllNotifications);
+    }
+    
+    if (btnRefresh) {
+      btnRefresh.addEventListener('click', refreshNotifications);
+    }
+  }
+
+  // Charger les messages reçus
+  async function loadReceivedMessages() {
+    try {
+      const res = await fetch(API_BASE + "/api/messages/conversations", { headers });
+      if (!res.ok) {
+        receivedMessages.innerHTML = "<div class='text-center text-muted'>Impossible de charger les messages</div>";
+        return;
+      }
+
+      const data = await res.json();
+      const conversations = data.data || [];
+
+      if (conversations.length === 0) {
+        receivedMessages.innerHTML = "<div class='text-center text-muted'>Aucun message</div>";
+        return;
+      }
+
+      receivedMessages.innerHTML = conversations.map(conv => `
+        <div class="border rounded p-3 mb-2">
+          <div class="d-flex justify-content-between align-items-start">
+            <div class="flex-grow-1">
+              <strong>${conv.prenom} ${conv.nom}</strong>
+              ${conv.unread_count > 0 ? `<span class="badge bg-danger ms-2">${conv.unread_count}</span>` : ''}
+              <div class="small text-muted">${conv.last_message}</div>
+              <div class="small text-muted">
+                ${conv.tontine_name ? `Tontine: ${conv.tontine_name}` : ''}
+                ${conv.corridor_name ? `Corridor: ${conv.corridor_name}` : ''}
+              </div>
+            </div>
+            <div class="small text-muted text-end">
+              ${new Date(conv.last_message_date).toLocaleDateString('fr-FR')}
+            </div>
+          </div>
+        </div>
+      `).join('');
+    } catch (err) {
+      console.error('Erreur chargement messages:', err);
+      receivedMessages.innerHTML = "<div class='text-center text-danger'>Erreur de chargement</div>";
+    }
+  }
+
+  // Initialisation
+  (async () => {
+    try {
+      await loadAvailable();
+      await window.loadMyTontines();
+      await loadNotifications();
+      await loadReceivedMessages();
+      
+      // Charger les nouvelles fonctionnalités avec gestion d'erreur
+      await Promise.allSettled([
+        window.loadBalances(),
+        window.loadUpcomingPayments(),
+        window.loadRecentTransactions(),
+        window.loadPaymentHistory()
+      ]);
+      
+      // Initialiser les événements des notifications
+      initNotificationEvents();
+      
+    } catch (error) {
+      console.error('Erreur lors de l\'initialisation:', error);
+    }
+  })();
+
+})();
+</script>
+</body>
+</html>

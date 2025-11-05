@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Créer Corridor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --glass: rgba(20, 20, 30, 0.6);
+      --accent: #00f2ff;
+      --accent2: #ff00c1;
+      --radius: 12px;
+      --glow: 0 0 8px var(--accent), 0 0 16px var(--accent);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: #fff;
+      font-family: 'Roboto', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      background-image:
+        radial-gradient(circle at 20% 50%, rgba(0, 242, 255, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(255, 0, 193, 0.08) 0%, transparent 50%);
+    }
+
+    .portal-container {
+      width: 100%;
+      max-width: 520px;
+      backdrop-filter: blur(12px);
+      background: var(--glass);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius);
+      box-shadow: 0 0 40px rgba(0, 242, 255, 0.25);
+      padding: 2rem 2.5rem;
+      animation: fadeIn 1s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .portal-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .portal-header h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.5rem;
+      letter-spacing: 1px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .portal-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+
+    .portal-back:hover {
+      color: #fff;
+    }
+
+    .portal-form label {
+      font-size: 0.9rem;
+      margin-bottom: 0.4rem;
+      display: block;
+      color: #ccc;
+    }
+
+    .portal-input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(0, 0, 0, 0.4);
+      color: #fff;
+      font-size: 1rem;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .portal-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: var(--glow);
+    }
+
+    .portal-row {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .portal-row > * {
+      flex: 1;
+    }
+
+    .portal-btn-primary {
+      width: 100%;
+      margin-top: 1.5rem;
+      padding: 0.85rem;
+      font-size: 1rem;
+      font-weight: 500;
+      border: none;
+      border-radius: var(--radius);
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      color: #000;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+
+    .portal-btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--glow);
+    }
+
+    .portal-btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .portal-message {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 480px) {
+      .portal-row {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="portal-container">
+    <a href="dashboard_organizer.html" class="portal-back">
+      <i class="bi bi-arrow-left"></i> Retour
+    </a>
+
+    <div class="portal-header">
+      <i class="bi bi-graph-up" style="font-size: 1.5rem; color: var(--accent);"></i>
+      <h1>Créer un Corridor</h1>
+    </div>
+
+    <form id="corridorForm">
+      <div class="mb-3">
+        <label>Nom du corridor *</label>
+        <input type="text" class="portal-input" name="name" required placeholder="Ex: Corridor Épargne 2024">
+      </div>
+
+      <div class="portal-row">
+        <div class="mb-3">
+          <label>Barème (XOF) *</label>
+          <input type="number" class="portal-input" name="bareme" step="0.01" required placeholder="50000">
+        </div>
+        <div class="mb-3">
+          <label>Commission (XOF)</label>
+          <input type="number" class="portal-input" name="commission" step="0.01" value="0" placeholder="500">
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label>Téléphone pour dépôt</label>
+        <input type="text" class="portal-input" name="phone" placeholder="+226 XX XX XX XX">
+      </div>
+
+      <button type="submit" class="portal-btn-primary">
+        <i class="bi bi-check-circle"></i> Créer le corridor
+      </button>
+    </form>
+
+    <div id="message" class="portal-message"></div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/assets/js/auth.js"></script>
+  <script>
+    const API_BASE = window.API_BASE_URL || "";
+
+    async function apiFetch(endpoint, options = {}) {
+      const token = localStorage.getItem("mec_token");
+      const headers = {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token,
+        ...options.headers
+      };
+
+      try {
+        const response = await fetch(API_BASE + endpoint, {
+          ...options,
+          headers
+        });
+
+        if (!response.ok) {
+          const error = await response.json().catch(() => ({ message: "Erreur serveur" }));
+          throw new Error(error.message || "Erreur API");
+        }
+
+        return await response.json();
+      } catch (error) {
+        console.error('Erreur API fetch:', error);
+        throw error;
+      }
+    }
+
+    function showNotification(message, type = 'info') {
+      const container = document.getElementById('message');
+      const icon = type === 'error' ? '❌' : '✅';
+      container.innerHTML = `${icon} ${message}`;
+      container.style.color = type === 'error' ? '#ff6b6b' : '#00f2ff';
+    }
+
+    // Soumission du formulaire
+    document.getElementById('corridorForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const button = e.target.querySelector('button[type="submit"]');
+      const originalText = button.innerHTML;
+      button.disabled = true;
+      button.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Création...';
+
+      try {
+        const fd = new FormData(e.target);
+        const payload = {
+          name: fd.get("name").trim(),
+          bareme: parseFloat(fd.get("bareme")) || 0,
+          commission: parseFloat(fd.get("commission")) || 0,
+          phone: fd.get("phone") || ""
+        };
+
+        if (!payload.name) throw new Error("Le nom est requis");
+        if (!payload.bareme || payload.bareme <= 0) throw new Error("Le barème doit être un nombre positif");
+
+        const res = await apiFetch("/api/corridors/create", {
+          method: "POST",
+          body: JSON.stringify(payload)
+        });
+
+        showNotification(" Corridor créé avec succès !", "success");
+        e.target.reset();
+      } catch (err) {
+        showNotification(`❌ ${err.message}`, "error");
+      } finally {
+        button.disabled = false;
+        button.innerHTML = originalText;
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Inscription - Micro Épargne Communautaire</title>
+
+  <!-- Bootstrap & Icônes -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+  <!-- Police moderne -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #020615, #051537);
+      --primary: #3d7bff;
+      --secondary: #18ffff;
+      --text: #e4ebff;
+      --muted: #bcd0ff;
+      --card-bg: rgba(255,255,255,0.05);
+      --border: rgba(255,255,255,0.1);
+    }
+
+    body {
+      background: var(--bg-gradient);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "Poppins", sans-serif;
+      color: var(--text);
+      padding: 20px;
+    }
+
+    .register-card {
+      width: 100%;
+      max-width: 950px;
+      border-radius: 18px;
+      overflow: hidden;
+      display: flex;
+      flex-wrap: wrap;
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      box-shadow: 0 0 40px rgba(24, 255, 255, 0.1);
+    }
+
+    .left-panel {
+      flex: 1;
+      min-width: 300px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      padding: 40px 30px;
+      color: white;
+    }
+
+    .left-panel h2 {
+      font-weight: 700;
+      font-size: 1.8rem;
+    }
+
+    .left-panel ul {
+      margin-top: 20px;
+      padding-left: 20px;
+    }
+
+    .left-panel li {
+      margin-bottom: 8px;
+    }
+
+    .right-panel {
+      flex: 2;
+      padding: 40px;
+    }
+
+    .right-panel h3 {
+      color: var(--secondary);
+      text-shadow: 0 0 8px rgba(24,255,255,0.3);
+      font-weight: 700;
+    }
+
+    .right-panel p {
+      color: var(--muted);
+      font-size: 1rem;
+      font-weight: 500;
+      margin-bottom: 20px;
+    }
+
+    .form-control, .form-select {
+      background: rgba(255,255,255,0.05);
+      border: 2px solid var(--border);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 12px 16px;
+      transition: all 0.3s ease;
+    }
+
+    .form-control:focus, .form-select:focus {
+      border-color: var(--secondary);
+      box-shadow: 0 0 10px rgba(24, 255, 255, 0.25);
+    }
+
+    .form-label {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .password-wrapper {
+      position: relative;
+    }
+
+    .toggle-password {
+      position: absolute;
+      top: 50%;
+      right: 15px;
+      transform: translateY(-50%);
+      color: var(--secondary);
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: color 0.3s ease;
+    }
+
+    .toggle-password:hover {
+      color: var(--primary);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border: none;
+      padding: 12px 25px;
+      border-radius: 10px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 25px rgba(24, 255, 255, 0.3);
+    }
+
+    a {
+      color: var(--secondary);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+      .register-card {
+        flex-direction: column;
+      }
+
+      .left-panel {
+        text-align: center;
+        border-radius: 18px 18px 0 0;
+      }
+
+      .right-panel {
+        padding: 25px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="register-card">
+    <!-- Partie gauche -->
+    <div class="left-panel">
+      <h2>Micro Épargne <br><small>Communautaire</small></h2>
+      <p class="mt-3">Créez un compte pour rejoindre, organiser et gérer vos tontines et corridors.</p>
+      <ul>
+        <li> Organisateur : créer et gérer jusqu'à 5 tontines (gratuit)</li>
+        <li> Participant : rejoindre jusqu'à 5 tontines (gratuit)</li>
+        <li> Premium : jusqu'à 100 créations / intégrations</li>
+      </ul>
+    </div>
+
+    <!-- Partie droite -->
+    <div class="right-panel">
+      <h3>Inscription</h3>
+      <p>Remplissez vos informations pour créer un compte</p>
+
+      <div id="alert-placeholder"></div>
+
+      <form id="registerForm" class="row g-3 mt-2">
+        <div class="col-md-6">
+          <label class="form-label">Prénom</label>
+          <input required type="text" name="prenom" class="form-control" placeholder="Votre prénom" />
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">Nom</label>
+          <input required type="text" name="nom" class="form-control" placeholder="Votre nom" />
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">Téléphone</label>
+          <input required type="tel" name="phone" class="form-control" placeholder="+226..." />
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">Rôle</label>
+          <select required name="role" class="form-select">
+            <option value="participant">Participant</option>
+            <option value="organisateur">Organisateur</option>
+          </select>
+        </div>
+
+        <div class="col-md-12">
+          <label class="form-label">Adresse e-mail</label>
+          <input required type="email" name="email" class="form-control" placeholder="exemple@email.com" />
+        </div>
+
+        <div class="col-md-6 password-wrapper">
+          <label class="form-label">Mot de passe</label>
+          <input required type="password" id="password" name="password" minlength="6" class="form-control" placeholder="Votre mot de passe" />
+          <i class="bi bi-eye toggle-password" id="togglePassword"></i>
+        </div>
+
+        <div class="col-md-6 password-wrapper">
+          <label class="form-label">Confirmer le mot de passe</label>
+          <input required type="password" id="confirmPassword" name="confirm_password" minlength="6" class="form-control" placeholder="Confirmez le mot de passe" />
+          <i class="bi bi-eye toggle-password" id="toggleConfirmPassword"></i>
+        </div>
+
+        <div class="col-12 d-flex justify-content-between align-items-center mt-3">
+          <small style="color:var(--muted);">Déjà un compte ? <a href="login.html">Se connecter</a></small>
+          <button type="submit" class="btn btn-primary">S'inscrire</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+  (() => {
+    const API_BASE = window.API_BASE_URL || "";
+    const form = document.getElementById("registerForm");
+    const alertPlaceholder = document.getElementById("alert-placeholder");
+
+    function showAlert(type, message) {
+      alertPlaceholder.innerHTML = `<div class="alert alert-${type} mt-3">${message}</div>`;
+      setTimeout(() => alertPlaceholder.innerHTML = "", 6000);
+    }
+
+    const togglePassword = document.getElementById("togglePassword");
+    const toggleConfirmPassword = document.getElementById("toggleConfirmPassword");
+    const passwordField = document.getElementById("password");
+    const confirmField = document.getElementById("confirmPassword");
+
+    function toggleVisibility(icon, input) {
+      const type = input.type === "password" ? "text" : "password";
+      input.type = type;
+      icon.classList.toggle("bi-eye");
+      icon.classList.toggle("bi-eye-slash");
+    }
+
+    togglePassword.addEventListener("click", () => toggleVisibility(togglePassword, passwordField));
+    toggleConfirmPassword.addEventListener("click", () => toggleVisibility(toggleConfirmPassword, confirmField));
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const fd = new FormData(form);
+      const nom = fd.get("nom").trim();
+      const prenom = fd.get("prenom").trim();
+      const phone = fd.get("phone").trim();
+      const role = fd.get("role");
+      const email = fd.get("email").trim();
+      const password = fd.get("password");
+      const confirm = fd.get("confirm_password");
+
+      if (password !== confirm) {
+        showAlert("warning", " Les mots de passe ne correspondent pas.");
+        return;
+      }
+
+      try {
+        const res = await fetch(API_BASE + "/api/auth/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ nom, prenom, email, password, role, phone })
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          showAlert("danger", data.message || "Erreur lors de l'inscription");
+          return;
+        }
+
+        showAlert("success", " Inscription réussie ! Redirection...");
+        setTimeout(() => window.location.href = "login.html", 1500);
+      } catch {
+        showAlert("danger", "Impossible de contacter le serveur.");
+      }
+    });
+  })();
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

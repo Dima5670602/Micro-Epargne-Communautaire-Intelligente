@@ -1,0 +1,2572 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Tableau de bord organisateur</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --glass: rgba(30, 30, 40, 0.7);
+      --accent: #00f2ff;
+      --accent2: #ff00c1;
+      --radius: 12px;
+      --glow: 0 0 8px var(--accent), 0 0 16px var(--accent);
+      --text: #e6f7ff;
+      --text-muted: #a0c8e0;
+      --border: rgba(0, 242, 255, 0.25);
+      --success: #00ff9d;
+      --warning: #ffd600;
+      --danger: #ff4d4d;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Roboto', sans-serif;
+      min-height: 100vh;
+      background-image:
+      radial-gradient(circle at 20% 50%, rgba(0, 242, 255, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(255, 0, 193, 0.08) 0%, transparent 50%);
+    }
+
+    .topbar {
+      backdrop-filter: blur(12px);
+      background: var(--glass);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1020;
+    }
+
+    .topbar strong {
+      font-family: 'Orbitron', sans-serif;
+      letter-spacing: 1px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: var(--text);
+      color: var(--text);
+    }
+
+    .portal-btn {
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      color: #000;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.3s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .portal-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--glow);
+    }
+
+    .container-main {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .dashboard-header {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #000;
+      padding: 30px;
+      border-radius: var(--radius);
+      margin-bottom: 25px;
+      box-shadow: 0 4px 15px rgba(0, 242, 255, 0.25);
+    }
+
+    .dashboard-header h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.8rem;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      backdrop-filter: blur(12px);
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 25px;
+      box-shadow: 0 0 20px rgba(0, 242, 255, 0.15);
+      transition: transform 0.3s, box-shadow 0.3s;
+      cursor: pointer;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 0 30px rgba(0, 242, 255, 0.3);
+    }
+
+    .stat-number {
+      font-size: 2.2rem;
+      font-weight: 700;
+      font-family: 'Orbitron', sans-serif;
+      color: var(--accent);
+    }
+
+    .stat-label {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .action-btn {
+      backdrop-filter: blur(12px);
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 0 20px rgba(0, 242, 255, 0.3);
+    }
+
+    .action-icon {
+      font-size: 2rem;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+
+    .portal-card,
+    .message-item,
+    .notification-item {
+      backdrop-filter: blur(12px);
+      background: rgba(15, 15, 20, 0.85);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.2rem;
+      box-shadow: 0 0 20px rgba(0, 242, 255, 0.15);
+      transition: transform 0.3s, box-shadow 0.3s;
+      color: var(--text);
+      margin-bottom: 1rem;
+    }
+
+    .portal-card:hover,
+    .message-item:hover,
+    .notification-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 30px rgba(0, 242, 255, 0.3);
+    }
+
+    .message-item.unread,
+    .notification-item.unread {
+      background: rgba(0, 242, 255, 0.12);
+      border-left: 3px solid var(--accent2);
+    }
+
+    .portal-tabs {
+      display: flex;
+      gap: 1rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 1.5rem;
+      overflow-x: auto;
+    }
+
+    .portal-tab {
+      padding: 0.75rem 1rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      border-bottom: 2px solid transparent;
+      transition: all 0.3s;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .portal-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+      text-shadow: 0 0 4px var(--accent);
+    }
+
+    .portal-tab:hover {
+      color: var(--text);
+    }
+
+    .portal-input,
+    .portal-select,
+    .portal-textarea {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: rgba(0, 0, 0, 0.4);
+      color: var(--text);
+      font-size: 1rem;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .portal-input:focus,
+    .portal-select:focus,
+    .portal-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: var(--glow);
+    }
+
+    .portal-btn-primary {
+      width: 100%;
+      padding: 0.85rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: var(--radius);
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      color: #000;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+
+    .portal-btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--glow);
+    }
+
+    .portal-btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .text-accent {
+      color: var(--accent);
+    }
+
+    .text-accent2 {
+      color: var(--accent2);
+    }
+
+    @media (max-width: 768px) {
+      .quick-actions {
+        grid-template-columns: 1fr;
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="d-flex align-items-center">
+      <img src="/assets/voir.jpg" alt="Logo" class="rounded-circle me-3" style="width: 40px; height: 40px;">
+      <div>
+        <strong class="d-block">Micro Épargne</strong>
+        <small class="text-muted">Organisateur</small>
+      </div>
+    </div>
+    <div class="d-flex align-items-center gap-3">
+      <div class="position-relative">
+        <button id="btnNotifications" class="btn btn-outline-warning btn-sm position-relative">
+          <i class="bi bi-bell"></i>
+          <span id="notificationCount" class="notification-badge position-absolute top-0 start-100 translate-middle" style="display: none;">0</span>
+        </button>
+      </div>
+      <button id="btnProfile" class="btn btn-outline-primary btn-sm">
+        <i class="bi bi-person-circle"></i> Profil
+      </button>
+      <button id="btnLogout" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-box-arrow-right"></i> Déconnexion
+      </button>
+    </div>
+  </div>
+
+  <div class="container-main">
+    <div class="dashboard-header">
+      <div class="row align-items-center">
+        <div class="col-md-8">
+          <h1 class="h2 mb-2">Tableau de Bord Organisateur</h1>
+          <p class="mb-0 opacity-75">Gérez vos tontines, corridors et participants en toute simplicité</p>
+        </div>
+        <div class="col-md-4 text-end">
+          <div class="bg-white bg-opacity-20 p-3 rounded">
+            <small class="d-block">Solde Total</small>
+            <h3 class="mb-0" id="totalBalance">0 XOF</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card" onclick="showActiveTontines()">
+        <div class="stat-number" id="totalTontines">0</div>
+        <div class="stat-label">Tontines Actives</div>
+        <small class="text-muted">Cliquez pour voir les détails</small>
+      </div>
+      <div class="stat-card success" onclick="showTab('tab-participants')">
+        <div class="stat-number" id="totalParticipants">0</div>
+        <div class="stat-label">Participants Totaux</div>
+        <small class="text-muted">Cliquez pour gérer</small>
+      </div>
+      <div class="stat-card warning" onclick="showTab('tab-requests')">
+        <div class="stat-number" id="pendingRequests">0</div>
+        <div class="stat-label">Demandes en Attente</div>
+        <small class="text-muted">Cliquez pour traiter</small>
+      </div>
+      <div class="stat-card danger" onclick="showActiveCorridors()">
+        <div class="stat-number" id="activeCorridorsCount">0</div>
+        <div class="stat-label">Corridors Actifs</div>
+        <small class="text-muted">Cliquez pour voir</small>
+      </div>
+    </div>
+
+    <div class="quick-actions">
+      <a href="#tab-creations" class="action-btn" onclick="showTab('tab-creations')">
+        <div class="action-icon">
+          <i class="bi bi-plus-circle"></i>
+        </div>
+        <div class="fw-semibold">Faire une créattion</div>
+        <small class="text-muted">Nouvelle épargne collective</small>
+      </a>
+      
+      <a href="#tab-participants" class="action-btn" onclick="showTab('tab-participants')">
+        <div class="action-icon">
+          <i class="bi bi-people"></i>
+        </div>
+        <div class="fw-semibold">Gérer les Participants</div>
+        <small class="text-muted">Paiements et distributions</small>
+      </a>
+      
+      <a href="#tab-requests" class="action-btn" onclick="showTab('tab-requests')">
+        <div class="action-icon">
+          <i class="bi bi-inbox"></i>
+        </div>
+        <div class="fw-semibold">Demandes en Attente</div>
+        <small class="text-muted" id="quickRequestsCount">0 nouvelles</small>
+      </a>
+      
+      <a href="#tab-messages" class="action-btn" onclick="showTab('tab-messages')">
+        <div class="action-icon">
+          <i class="bi bi-chat"></i>
+        </div>
+        <div class="fw-semibold">Messages</div>
+        <small class="text-muted" id="quickMessagesCount">0 non lus</small>
+      </a>
+      
+      <a href="#tab-corridors-active" class="action-btn" onclick="showTab('tab-corridors-active')">
+        <div class="action-icon">
+          <i class="bi bi-graph-up-arrow"></i>
+        </div>
+        <div class="fw-semibold">Corridors Actifs</div>
+        <small class="text-muted">Gérer les corridors en cours</small>
+      </a>
+    </div>
+
+    <ul class="nav nav-tabs-modern" id="dashboardTabs">
+      <li class="nav-item">
+        <a class="nav-link active" data-bs-toggle="tab" href="#tab-overview">
+          <i class="bi bi-speedometer2 me-2"></i>Vue d'Ensemble
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="tab" href="#tab-creations">
+          <i class="bi bi-plus-circle me-2"></i>Créations
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="tab" href="#tab-requests">
+          <i class="bi bi-inbox me-2"></i>Demandes
+          <span id="requestsBadge" class="badge-modern bg-danger ms-1" style="display:none">0</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="tab" href="#tab-participants">
+          <i class="bi bi-people me-2"></i>Participants
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="tab" href="#tab-messages">
+          <i class="bi bi-chat me-2"></i>Messages
+          <span id="messagesBadge" class="badge-modern bg-warning ms-1" style="display:none">0</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="tab" href="#tab-corridors-active">
+          <i class="bi bi-graph-up-arrow me-2"></i>Corridors Actifs
+          <span id="activeCorridorsCountBadge" class="badge-modern bg-success ms-1" style="display:none">0</span>
+        </a>
+      </li>
+    </ul>
+
+    <div class="tab-content">
+      <div class="tab-pane fade show active" id="tab-overview">
+        <div class="row">
+          <div class="col-lg-8">
+            <div class="card-modern">
+              <div class="card-header-modern d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-piggy-bank me-2"></i>Mes Tontines Actives</span>
+                <a href="#tab-creations" class="btn btn-primary-modern btn-sm" onclick="showTab('tab-creations')">
+                  <i class="bi bi-plus"></i> Nouvelle
+                </a>
+              </div>
+              <div class="card-body-modern">
+                <div class="active-tontines-grid" id="activeTontinesGrid">
+                  <div class="empty-state">
+                    <i class="bi bi-piggy-bank"></i>
+                    <div>Aucune tontine active</div>
+                    <small class="text-muted">Créez votre première tontine pour commencer</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-modern">
+              <div class="card-header-modern">
+                <i class="bi bi-clock-history me-2"></i>Activité Récente
+              </div>
+              <div class="card-body-modern">
+                <div id="recentActivity">
+                  <div class="empty-state">
+                    <i class="bi bi-activity"></i>
+                    <div>Chargement de l'activité récente...</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-4">
+            <div class="card-modern">
+              <div class="card-header-modern">
+                <i class="bi bi-graph-up me-2"></i>Statistiques Rapides
+              </div>
+              <div class="card-body-modern">
+                <div class="mb-3">
+                  <small class="text-muted d-block">Tontines Actives</small>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <span id="overviewActiveTontines">0</span>
+                    <span class="badge bg-success">0%</span>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <small class="text-muted d-block">Participants Totaux</small>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <span id="overviewTotalParticipants">0</span>
+                    <span class="badge bg-info">+0</span>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <small class="text-muted d-block">Taux de Paiement</small>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <span id="overviewPaymentRate">0%</span>
+                    <span class="badge bg-warning">-0%</span>
+                  </div>
+                </div>
+                <div>
+                  <small class="text-muted d-block">Revenus Commissions</small>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <span id="overviewCommission">0 XOF</span>
+                    <span class="badge bg-success">+0%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-modern">
+              <div class="card-header-modern">
+                <i class="bi bi-exclamation-triangle me-2"></i>Actions Requises
+              </div>
+              <div class="card-body-modern">
+                <div id="pendingActions">
+                  <div class="empty-state">
+                    <i class="bi bi-check2-circle"></i>
+                    <div>Aucune action en attente</div>
+                    <small class="text-muted">Tout est à jour</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-pane fade" id="tab-creations">
+        <div class="row">
+          <div class="col-lg-6">
+            <div class="card-modern">
+              <div class="card-header-modern">
+                <i class="bi bi-piggy-bank me-2"></i>Créer une Tontine
+              </div>
+              <div class="card-body-modern">
+                <form id="formTontine" class="row g-3">
+                  <div class="col-12">
+                    <label class="form-label">Nom de la tontine *</label>
+                    <input name="name" required placeholder="Ex: Tontine Familiale 2024" class="form-control form-control-modern"/>
+                  </div>
+                  <div class="col-6">
+                    <label class="form-label">Date de début</label>
+                    <input name="date" type="date" class="form-control form-control-modern" />
+                  </div>
+                  <div class="col-6">
+                    <label class="form-label">Téléphone</label>
+                    <input name="phone" placeholder="Votre numéro" class="form-control form-control-modern"/>
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label">Description</label>
+                    <textarea name="description" placeholder="Description de la tontine..." class="form-control form-control-modern" rows="2"></textarea>
+                  </div>
+                  <div class="col-6">
+                    <label class="form-label">Barème (XOF) *</label>
+                    <input name="bareme" type="number" step="0.01" placeholder="5000" class="form-control form-control-modern" required/>
+                  </div>
+                  <div class="col-6">
+                    <label class="form-label">Commission (XOF)</label>
+                    <input name="commission" type="number" step="0.01" placeholder="500" class="form-control form-control-modern"/>
+                  </div>
+                  <div class="col-12">
+                    <button type="submit" class="btn btn-primary-modern w-100">
+                      <i class="bi bi-plus-circle me-2"></i>Créer la Tontine
+                    </button>
+                  </div>
+                </form>
+                <div class="mt-3 p-3 bg-light rounded">
+                  <small class="text-muted">
+                    <i class="bi bi-info-circle me-1"></i>
+                    Après création, un jeton d'accès sera généré automatiquement pour partager avec vos participants.
+                  </small>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-modern">
+              <div class="card-header-modern">
+                <i class="bi bi-graph-up me-2"></i>Créer un Corridor
+              </div>
+              <div class="card-body-modern">
+                <form id="formCorridor" class="row g-3">
+                  <div class="col-12">
+                    <label class="form-label">Nom du corridor *</label>
+                    <input name="name" required placeholder="Ex: Corridor d'Investissement" class="form-control form-control-modern"/>
+                  </div>
+                  <div class="col-6">
+                    <label class="form-label">Barème (XOF) *</label>
+                    <input name="bareme" type="number" step="0.01" placeholder="10000" class="form-control form-control-modern" required/>
+                  </div>
+                  <div class="col-6">
+                    <label class="form-label">Commission (XOF)</label>
+                    <input name="commission" type="number" step="0.01" placeholder="1000" class="form-control form-control-modern"/>
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label">Téléphone</label>
+                    <input name="phone" placeholder="Votre numéro" class="form-control form-control-modern"/>
+                  </div>
+                  <div class="col-12">
+                    <button type="submit" class="btn btn-primary-modern w-100">
+                      <i class="bi bi-plus-circle me-2"></i>Créer le Corridor
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-6">
+            <div class="card-modern">
+              <div class="card-header-modern d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-piggy-bank me-2"></i>Mes Tontines</span>
+                <span class="badge bg-primary" id="tontinesCount">0</span>
+              </div>
+              <div class="card-body-modern">
+                <div id="tontinesList">
+                  <div class="empty-state">
+                    <i class="bi bi-piggy-bank"></i>
+                    <div>Aucune tontine créée</div>
+                    <small class="text-muted">Vos tontines apparaîtront ici</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-modern">
+              <div class="card-header-modern d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-graph-up me-2"></i>Mes Corridors</span>
+                <span class="badge bg-primary" id="corridorsCount">0</span>
+              </div>
+              <div class="card-body-modern">
+                <div id="corridorsList">
+                  <div class="empty-state">
+                    <i class="bi bi-graph-up"></i>
+                    <div>Aucun corridor créé</div>
+                    <small class="text-muted">Vos corridors apparaîtront ici</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-pane fade" id="tab-requests">
+        <div class="card-modern">
+          <div class="card-header-modern d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-inbox me-2"></i>Demandes de Participation</span>
+            <span class="badge bg-danger" id="totalRequestsCount">0 en attente</span>
+          </div>
+          <div class="card-body-modern">
+            <div id="pendingRequestsList">
+              <div class="empty-state">
+                <i class="bi bi-inbox"></i>
+                <div>Aucune demande en attente</div>
+                <small class="text-muted">Les nouvelles demandes apparaîtront ici</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-pane fade" id="tab-participants">
+        <div class="row">
+          <div class="col-lg-8">
+            <div class="card-modern">
+              <div class="card-header-modern d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-people me-2"></i>Gestion des Participants</span>
+                <div class="d-flex gap-2">
+                  <select id="selectedTontine" class="form-select form-select-sm">
+                    <option value="">Sélectionnez une tontine</option>
+                  </select>
+                  <button id="btnRefreshParticipants" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-arrow-clockwise"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="card-body-modern">
+                <div id="tontineStats" class="row mb-4" style="display:none;">
+                  <div class="col-md-3">
+                    <div class="text-center p-3 bg-light rounded">
+                      <div class="fw-bold text-primary" id="statsTotalParticipants">0</div>
+                      <small class="text-muted">Participants</small>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="text-center p-3 bg-light rounded">
+                      <div class="fw-bold text-success" id="statsCompletedPayments">0</div>
+                      <small class="text-muted">Payés</small>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="text-center p-3 bg-light rounded">
+                      <div class="fw-bold text-warning" id="statsPendingPayments">0</div>
+                      <small class="text-muted">En attente</small>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="text-center p-3 bg-light rounded">
+                      <div class="fw-bold text-info" id="statsCurrentBalance">0 XOF</div>
+                      <small class="text-muted">Solde</small>
+                    </div>
+                  </div>
+                </div>
+
+                <div id="participantsList">
+                  <div class="empty-state">
+                    <i class="bi bi-people"></i>
+                    <div>Sélectionnez une tontine</div>
+                    <small class="text-muted">Choisissez une tontine pour voir ses participants</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-4">
+            <div class="card-modern">
+              <div class="card-header-modern">
+                <i class="bi bi-person-plus me-2"></i>Ajouter un Participant
+              </div>
+              <div class="card-body-modern">
+                <form id="addParticipantForm" class="row g-3">
+                  <div class="col-12">
+                    <label class="form-label">Tontine</label>
+                    <select id="addTontineSelect" class="form-select form-control-modern" required>
+                      <option value="">Sélectionnez une tontine</option>
+                    </select>
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label">Email du participant</label>
+                    <input type="email" class="form-control form-control-modern" placeholder="participant@email.com" required>
+                  </div>
+                  <div class="col-12">
+                    <button type="submit" class="btn btn-success w-100">
+                      <i class="bi bi-person-add me-2"></i>Ajouter le Participant
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <div class="card-modern">
+              <div class="card-header-modern">
+                <i class="bi bi-megaphone me-2"></i>Message Groupé
+              </div>
+              <div class="card-body-modern">
+                <form id="groupMessageForm" class="row g-3">
+                  <div class="col-12">
+                    <label class="form-label">Tontine</label>
+                    <select id="messageTontineSelect" class="form-select form-control-modern" required>
+                      <option value="">Sélectionnez une tontine</option>
+                    </select>
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label">Message</label>
+                    <textarea class="form-control form-control-modern" placeholder="Votre message à tous les participants..." rows="3" required></textarea>
+                  </div>
+                  <div class="col-12">
+                    <button type="submit" class="btn btn-primary-modern w-100">
+                      <i class="bi bi-send me-2"></i>Envoyer le Message
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <div class="card-modern">
+              <div class="card-header-modern">
+                <i class="bi bi-currency-exchange me-2"></i>Gestion des Paiements
+              </div>
+              <div class="card-body-modern">
+                <div class="mb-3 p-3 bg-light rounded">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <span>Solde disponible:</span>
+                    <strong class="text-success" id="currentBalance">0 XOF</strong>
+                  </div>
+                </div>
+
+                <form id="distributeFundsForm" class="row g-2">
+                  <div class="col-12">
+                    <label class="form-label">Distribuer à</label>
+                    <select id="distributionParticipant" class="form-select form-control-modern" required>
+                      <option value="">Sélectionnez un participant</option>
+                    </select>
+                  </div>
+                  <div class="col-8">
+                    <label class="form-label">Montant (XOF)</label>
+                    <input type="number" class="form-control form-control-modern" placeholder="5000" required>
+                  </div>
+                  <div class="col-4">
+                    <label class="form-label">&nbsp;</label>
+                    <button type="submit" class="btn btn-success w-100">
+                      <i class="bi bi-send"></i>
+                    </button>
+                  </div>
+                </form>
+
+                <hr class="my-3">
+
+                <form id="paymentReminderForm" class="row g-2">
+                  <div class="col-12">
+                    <label class="form-label">Rappel de paiement</label>
+                    <textarea class="form-control form-control-modern" placeholder="Message personnalisé..." rows="2"></textarea>
+                  </div>
+                  <div class="col-12">
+                    <button type="submit" class="btn btn-warning w-100">
+                      <i class="bi bi-bell me-2"></i>Envoyer Rappel
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-pane fade" id="tab-messages">
+        <div class="row">
+          <div class="col-lg-6">
+            <div class="card-modern">
+              <div class="card-header-modern d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-chat-left me-2"></i>Messages Reçus</span>
+                <button class="btn btn-outline-danger btn-sm" onclick="clearAllMessages()">
+                  <i class="bi bi-trash me-1"></i>Vider le cache
+                </button>
+              </div>
+              <div class="card-body-modern">
+                <div id="receivedMessages">
+                  <div class="empty-state">
+                    <i class="bi bi-chat-left"></i>
+                    <div>Aucun message</div>
+                    <small class="text-muted">Vos conversations apparaîtront ici</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="card-modern">
+              <div class="card-header-modern">
+                <i class="bi bi-send me-2"></i>Envoyer un Message
+              </div>
+              <div class="card-body-modern">
+                <form id="sendMessageForm" class="row g-3">
+                  <div class="col-12">
+                    <label class="form-label">Tontine</label>
+                    <select id="messageToTontine" class="form-select form-control-modern" required>
+                      <option value="">Sélectionnez une tontine</option>
+                    </select>
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label">Destinataire</label>
+                    <select id="messageToParticipant" class="form-select form-control-modern" required>
+                      <option value="">Sélectionnez un participant</option>
+                    </select>
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label">Message</label>
+                    <textarea class="form-control form-control-modern" placeholder="Votre message..." rows="4" required></textarea>
+                  </div>
+                  <div class="col-12">
+                    <button type="submit" class="btn btn-primary-modern w-100">
+                      <i class="bi bi-send me-2"></i>Envoyer le Message
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <div class="card-modern mt-4">
+              <div class="card-header-modern">
+                <i class="bi bi-currency-exchange me-2"></i>Statut des Paiements
+              </div>
+              <div class="card-body-modern">
+                <div id="paymentStatusSection">
+                  <div class="empty-state">
+                    <i class="bi bi-currency-exchange"></i>
+                    <div>Sélectionnez une tontine</div>
+                    <small class="text-muted">Les statuts de paiement apparaîtront ici</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-pane fade" id="tab-corridors-active">
+        <div class="card-modern">
+          <div class="card-header-modern d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-graph-up-arrow me-2"></i>Mes Corridors Actifs</span>
+            <span class="badge bg-success" id="activeCorridorsCountBadge2">0 corridors</span>
+          </div>
+          <div class="card-body-modern">
+            <div class="active-tontines-grid" id="activeCorridorsGrid">
+              <div class="empty-state">
+                <i class="bi bi-graph-up-arrow"></i>
+                <div>Aucun corridor actif</div>
+                <small class="text-muted">Créez votre premier corridor pour commencer</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="tontineDetailsModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Détails de la Tontine</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="tontineDetailsContent">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="conversationModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Conversation</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body conversation-modal" id="conversationContent">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+          <button type="button" class="btn btn-primary" id="btnReplyInModal">
+            <i class="bi bi-reply me-1"></i>Répondre
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="corridorDetailsModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Détails du Corridor</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="corridorDetailsContent">
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  
+(() => {
+  const API_BASE = window.API_BASE_URL || "";
+  const token = localStorage.getItem("mec_token");
+  const role = localStorage.getItem("mec_role");
+
+  if (!token || role !== "organisateur") {
+    alert("Vous devez être connecté en tant qu'organisateur.");
+    window.location.href = "login.html";
+    return;
+  }
+
+  const headers = { "Content-Type": "application/json", "Authorization": "Bearer " + token };
+
+  let myTontines = [];
+  let myCorridors = [];
+  let pendingRequests = [];
+  let conversations = [];
+  let currentConversationUserId = null;
+  let currentConversationTontineId = null;
+  let currentConversationMessages = [];
+  let paymentTrackingData = {};
+
+  // =============================================
+  // FONCTIONS DE SUIVI DES PAIEMENTS
+  // =============================================
+
+  // Fonction principale de suivi des paiements
+  async function trackPayments(tontineId) {
+    try {
+      const res = await fetch(API_BASE + `/api/organizer/tontines/${tontineId}/payment-tracking`, { headers });
+      if (!res.ok) throw new Error("Erreur chargement suivi paiements");
+      
+      const data = await res.json();
+      paymentTrackingData[tontineId] = data.data;
+      return data.data;
+    } catch (err) {
+      console.error("Erreur suivi paiements:", err);
+      return null;
+    }
+  }
+
+  // Fonction de calcul de progression
+  function calculateProgress(completed, total) {
+    if (!total || total === 0) return 0;
+    return Math.round((completed / total) * 100);
+  }
+
+  // Fonction d'affichage du suivi
+  function displayPaymentTracking(tontineId, trackingData) {
+    if (!trackingData) return;
+    
+    const progress = calculateProgress(trackingData.completed_count, trackingData.total_participants);
+    
+    return `
+      <div class="payment-tracking-widget mb-3 p-3 bg-light rounded">
+        <div class="d-flex justify-content-between mb-2">
+          <span class="fw-bold">Suivi des Paiements</span>
+          <span class="badge bg-${progress === 100 ? 'success' : progress > 50 ? 'warning' : 'danger'}">
+            ${progress}%
+          </span>
+        </div>
+        <div class="progress-bar-custom">
+          <div class="progress-fill" style="width: ${progress}%"></div>
+        </div>
+        <div class="row mt-2 text-center">
+          <div class="col-4">
+            <div class="small text-muted">Payés</div>
+            <div class="fw-bold text-success">${trackingData.completed_count || 0}</div>
+          </div>
+          <div class="col-4">
+            <div class="small text-muted">En attente</div>
+            <div class="fw-bold text-warning">${trackingData.pending_count || 0}</div>
+          </div>
+          <div class="col-4">
+            <div class="small text-muted">Total</div>
+            <div class="fw-bold text-primary">${trackingData.total_participants || 0}</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // Fonction de mise à jour des statistiques
+  function updatePaymentStats(tontineId) {
+    const tracking = paymentTrackingData[tontineId];
+    if (!tracking) return;
+    
+    document.getElementById('statsTotalParticipants').textContent = tracking.total_participants || 0;
+    document.getElementById('statsCompletedPayments').textContent = tracking.completed_count || 0;
+    document.getElementById('statsPendingPayments').textContent = tracking.pending_count || 0;
+    document.getElementById('statsCurrentBalance').textContent = `${tracking.total_collected || 0} XOF`;
+  }
+
+  // Fonction de décompte par tontine
+  function getTontinePaymentSummary(tontineId) {
+    const tracking = paymentTrackingData[tontineId];
+    if (!tracking) return null;
+    
+    return {
+      tontineId: tontineId,
+      totalParticipants: tracking.total_participants || 0,
+      completedPayments: tracking.completed_count || 0,
+      pendingPayments: tracking.pending_count || 0,
+      totalCollected: tracking.total_collected || 0,
+      progressPercentage: calculateProgress(tracking.completed_count, tracking.total_participants)
+    };
+  }
+
+  // Fonctions utilitaires pour le décompte
+  function getAllTontinesPaymentSummary() {
+    const summaries = [];
+    for (const tontineId in paymentTrackingData) {
+      const summary = getTontinePaymentSummary(tontineId);
+      if (summary) summaries.push(summary);
+    }
+    return summaries;
+  }
+
+  function getTotalPaymentStats() {
+    let totalParticipants = 0;
+    let totalCompleted = 0;
+    let totalPending = 0;
+    let totalCollected = 0;
+    
+    for (const tontineId in paymentTrackingData) {
+      const tracking = paymentTrackingData[tontineId];
+      totalParticipants += tracking.total_participants || 0;
+      totalCompleted += tracking.completed_count || 0;
+      totalPending += tracking.pending_count || 0;
+      totalCollected += tracking.total_collected || 0;
+    }
+    
+    return {
+      totalParticipants,
+      totalCompleted,
+      totalPending,
+      totalCollected,
+      overallProgress: calculateProgress(totalCompleted, totalParticipants)
+    };
+  }
+
+  // =============================================
+  // FONCTIONS DE CHARGEMENT DES DONNÉES
+  // =============================================
+
+  async function loadTontines() {
+    try {
+      const res = await fetch(API_BASE + "/api/tontines", { headers });
+      if (res.ok) {
+        const data = await res.json();
+        myTontines = data.data || [];
+        
+        // Charger le suivi des paiements pour chaque tontine
+        for (const tontine of myTontines) {
+          await trackPayments(tontine.id);
+        }
+        
+        document.getElementById('tontinesCount').textContent = myTontines.length;
+        document.getElementById('totalTontines').textContent = myTontines.length;
+        document.getElementById('overviewActiveTontines').textContent = myTontines.length;
+        
+        // Mettre à jour les statistiques globales
+        updateGlobalStats();
+        renderActiveTontines();
+      } else {
+        myTontines = [];
+      }
+    } catch (err) {
+      myTontines = [];
+      console.error("Erreur chargement tontines:", err);
+    }
+    renderTontines();
+    updateTontineSelects();
+  }
+
+  async function loadCorridors() {
+    try {
+      const res = await fetch(API_BASE + "/api/corridors", { headers });
+      if (res.ok) {
+        const data = await res.json();
+        myCorridors = data.data || [];
+        document.getElementById('corridorsCount').textContent = myCorridors.length;
+        
+        renderActiveCorridors();
+      } else {
+        myCorridors = [];
+      }
+    } catch (err) {
+      myCorridors = [];
+      console.error("Erreur chargement corridors:", err);
+    }
+    renderCorridors();
+  }
+
+  async function loadPendingRequests() {
+    try {
+      const res = await fetch(API_BASE + "/api/organizer/requests/pending", { headers });
+      if (!res.ok) throw new Error("Erreur chargement demandes");
+      
+      const data = await res.json();
+      pendingRequests = data.data || [];
+      
+      const requestsContainer = document.getElementById("pendingRequestsList");
+      
+      if (pendingRequests.length > 0) {
+        requestsBadge.textContent = pendingRequests.length;
+        requestsBadge.style.display = 'inline';
+        notificationCount.textContent = pendingRequests.length;
+        notificationCount.style.display = 'flex';
+        document.getElementById('pendingRequests').textContent = pendingRequests.length;
+        document.getElementById('quickRequestsCount').textContent = `${pendingRequests.length} nouvelles`;
+      } else {
+        requestsBadge.style.display = 'none';
+        notificationCount.style.display = 'none';
+        document.getElementById('quickRequestsCount').textContent = '0 nouvelles';
+      }
+      
+      if (pendingRequests.length === 0) {
+        requestsContainer.innerHTML = '<div class="empty-state"><i class="bi bi-inbox"></i><div>Aucune demande en attente</div><small class="text-muted">Les nouvelles demandes apparaîtront ici</small></div>';
+        return;
+      }
+      
+      requestsContainer.innerHTML = pendingRequests.map(request => `
+        <div class="border rounded p-3 mb-3">
+          <div class="d-flex justify-content-between align-items-start">
+            <div class="flex-grow-1">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <strong>${request.prenom} ${request.nom}</strong>
+                  <div class="small text-muted">
+                    <i class="bi bi-envelope"></i> ${request.email}
+                    ${request.telephone ? ` • <i class="bi bi-phone"></i> ${request.telephone}` : ''}
+                  </div>
+                  <div class="small mt-1">
+                    <i class="bi bi-clock"></i> Demandé le: ${new Date(request.created_at).toLocaleDateString('fr-FR')}
+                  </div>
+                  <div class="small">
+                    <i class="bi bi-${request.tontine_nom ? 'piggy-bank' : 'graph-up'}"></i> 
+                    ${request.tontine_nom ? `Tontine: ${request.tontine_nom}` : ''}
+                    ${request.corridor_nom ? `Corridor: ${request.corridor_nom}` : ''}
+                  </div>
+                </div>
+                <div class="d-flex gap-2">
+                  <button class="btn btn-success btn-sm" onclick="handleRequest(${request.id}, 'accept')">
+                    <i class="bi bi-check-lg"></i> Accepter
+                  </button>
+                  <button class="btn btn-danger btn-sm" onclick="handleRequest(${request.id}, 'reject')">
+                    <i class="bi bi-x-lg"></i> Refuser
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join("");
+    } catch (err) {
+      console.error("Erreur chargement demandes:", err);
+      document.getElementById("pendingRequestsList").innerHTML = '<div class="text-center text-danger py-4">Erreur de chargement des demandes</div>';
+    }
+  }
+
+  function updateGlobalStats() {
+    const stats = getTotalPaymentStats();
+    
+    document.getElementById('totalParticipants').textContent = stats.totalParticipants;
+    document.getElementById('overviewTotalParticipants').textContent = stats.totalParticipants;
+    document.getElementById('overviewPaymentRate').textContent = `${stats.overallProgress}%`;
+    document.getElementById('totalBalance').textContent = `${stats.totalCollected.toLocaleString()} XOF`;
+  }
+
+  function updateTontineSelects() {
+    const selects = ['selectedTontine', 'addTontineSelect', 'messageTontineSelect', 'messageToTontine'];
+    selects.forEach(selectId => {
+      const select = document.getElementById(selectId);
+      if (select) {
+        select.innerHTML = '<option value="">Sélectionnez une tontine</option>' +
+          myTontines.map(t => `<option value="${t.id}">${escapeHtml(t.name)}</option>`).join("");
+      }
+    });
+  }
+
+  async function loadTontineParticipants(tontineId) {
+    try {
+      const res = await fetch(API_BASE + `/api/organizer/tontines/${tontineId}/participants`, { headers });
+      if (!res.ok) throw new Error("Erreur chargement participants");
+      
+      const data = await res.json();
+      const participants = data.data || [];
+      
+      // Afficher les stats
+      document.getElementById('tontineStats').style.display = 'flex';
+      
+      // Charger le suivi des paiements
+      const tracking = await trackPayments(tontineId);
+      if (tracking) {
+        updatePaymentStats(tontineId);
+      }
+      
+      const container = document.getElementById("participantsList");
+      
+      if (participants.length === 0) {
+        container.innerHTML = '<div class="empty-state"><i class="bi bi-people"></i><div>Aucun participant dans cette tontine</div><small class="text-muted">Les participants apparaîtront ici</small></div>';
+        return;
+      }
+      
+      // Afficher le widget de suivi en haut
+      let html = displayPaymentTracking(tontineId, tracking) || '';
+      
+      html += participants.map(participant => `
+        <div class="border rounded p-3 mb-2 participant-item ${participant.payment_status === 'completed' ? 'payment-completed' : 'payment-pending'}">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="flex-grow-1">
+              <strong>${participant.prenom} ${participant.nom}</strong>
+              <div class="small text-muted">
+                <i class="bi bi-envelope"></i> ${participant.email}
+                ${participant.telephone ? ` • <i class="bi bi-phone"></i> ${participant.telephone}` : ''}
+              </div>
+              <div class="small">
+                <i class="bi bi-calendar"></i> Rejoint le: ${new Date(participant.joined_at).toLocaleDateString('fr-FR')}
+                • <span class="badge ${participant.payment_status === 'completed' ? 'bg-success' : 'bg-warning'}">
+                  ${participant.payment_status === 'completed' ? 'Paiement terminé' : 'Paiement en attente'}
+                </span>
+              </div>
+            </div>
+            <div class="d-flex gap-1">
+              <button class="btn btn-outline-primary btn-sm" onclick="contactParticipant(${participant.id}, '${participant.email}')">
+                <i class="bi bi-envelope"></i>
+              </button>
+              <button class="btn btn-outline-danger btn-sm" onclick="removeParticipant(${tontineId}, ${participant.id})">
+                <i class="bi bi-person-dash"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join("");
+      
+      container.innerHTML = html;
+    } catch (err) {
+      console.error("Erreur chargement participants:", err);
+      document.getElementById("participantsList").innerHTML = '<div class="text-center text-danger py-4">Erreur de chargement des participants</div>';
+    }
+  }
+
+  // =============================================
+  // FONCTIONS D'AFFICHAGE
+  // =============================================
+
+  function renderActiveTontines() {
+    const container = document.getElementById("activeTontinesGrid");
+    
+    if (!myTontines.length) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <i class="bi bi-piggy-bank"></i>
+          <div>Aucune tontine active</div>
+          <small class="text-muted">Créez votre première tontine pour commencer</small>
+        </div>
+      `;
+      return;
+    }
+    
+    const activeTontines = myTontines.slice(0, 6);
+    
+    container.innerHTML = activeTontines.map(tontine => {
+      const tracking = paymentTrackingData[tontine.id];
+      const progress = tracking ? calculateProgress(tracking.completed_count, tracking.total_participants) : 0;
+      
+      return `
+        <div class="tontine-card" onclick="openTontineDetails(${tontine.id})">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <h6 class="mb-2">${escapeHtml(tontine.name)}</h6>
+              <div class="small text-muted">
+                <i class="bi bi-currency-exchange"></i> ${tontine.bareme || 0} XOF
+              </div>
+              <div class="small text-muted">
+                <i class="bi bi-calendar"></i> ${tontine.date ? tontine.date.split("T")[0] : "Non définie"}
+              </div>
+            </div>
+            <span class="badge bg-success">Active</span>
+          </div>
+          
+          ${tracking ? `
+          <div class="progress-bar-custom mt-2">
+            <div class="progress-fill" style="width: ${progress}%"></div>
+          </div>
+          <div class="small text-center text-muted mb-2">${progress}% payé</div>
+          ` : ''}
+          
+          <div class="stats-mini">
+            <div class="stat-mini">
+              <div class="stat-mini-value">${tracking?.total_participants || 0}</div>
+              <div class="stat-mini-label">Participants</div>
+            </div>
+            <div class="stat-mini">
+              <div class="stat-mini-value">${tracking?.completed_count || 0}</div>
+              <div class="stat-mini-label">Payés</div>
+            </div>
+            <div class="stat-mini">
+              <div class="stat-mini-value">${tracking?.total_collected || 0}</div>
+              <div class="stat-mini-label">XOF</div>
+            </div>
+          </div>
+          
+          <div class="mt-2">
+            <button class="btn btn-sm btn-outline-primary w-100" onclick="event.stopPropagation(); manageTontineParticipants(${tontine.id})">
+              <i class="bi bi-people"></i> Gérer
+            </button>
+          </div>
+        </div>
+      `;
+    }).join("");
+    
+    if (myTontines.length > 6) {
+      container.innerHTML += `
+        <div class="tontine-card text-center" onclick="showTab('tab-creations')">
+          <div class="empty-state py-4">
+            <i class="bi bi-plus-circle"></i>
+            <div>Voir toutes les créations</div>
+            <small class="text-muted">${myTontines.length - 6} autres tontines</small>
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  function renderActiveCorridors() {
+    const container = document.getElementById("activeCorridorsGrid");
+    const activeCorridorsCount = document.getElementById("activeCorridorsCount");
+    const activeCorridorsCountBadge = document.getElementById("activeCorridorsCountBadge");
+    const activeCorridorsCountBadge2 = document.getElementById("activeCorridorsCountBadge2");
+    
+    if (!myCorridors.length) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <i class="bi bi-graph-up-arrow"></i>
+          <div>Aucun corridor actif</div>
+          <small class="text-muted">Créez votre premier corridor pour commencer</small>
+        </div>
+      `;
+      activeCorridorsCount.textContent = "0";
+      if (activeCorridorsCountBadge) activeCorridorsCountBadge.textContent = "0 corridors";
+      if (activeCorridorsCountBadge2) activeCorridorsCountBadge2.textContent = "0 corridors";
+      return;
+    }
+    
+    activeCorridorsCount.textContent = myCorridors.length;
+    if (activeCorridorsCountBadge) activeCorridorsCountBadge.textContent = `${myCorridors.length} corridors`;
+    if (activeCorridorsCountBadge2) activeCorridorsCountBadge2.textContent = `${myCorridors.length} corridors`;
+    
+    container.innerHTML = myCorridors.map(corridor => `
+      <div class="corridor-card" onclick="openCorridorDetails(${corridor.id})">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <h6 class="mb-2">${escapeHtml(corridor.name)}</h6>
+            <div class="small text-muted">
+              <i class="bi bi-currency-exchange"></i> ${corridor.bareme || 0} XOF
+            </div>
+            <div class="small text-muted">
+              ${corridor.commission ? `<i class="bi bi-percent"></i> Commission: ${corridor.commission} XOF` : ''}
+            </div>
+          </div>
+          <span class="badge bg-success">Actif</span>
+        </div>
+        
+        <div class="stats-mini">
+          <div class="stat-mini">
+            <div class="stat-mini-value">${corridor.participants_count || 0}</div>
+            <div class="stat-mini-label">Participants</div>
+          </div>
+          <div class="stat-mini">
+            <div class="stat-mini-value">${corridor.completed_payments || 0}</div>
+            <div class="stat-mini-label">Terminés</div>
+          </div>
+          <div class="stat-mini">
+            <div class="stat-mini-value">${corridor.current_balance || 0}</div>
+            <div class="stat-mini-label">XOF</div>
+          </div>
+        </div>
+        
+        <div class="mt-2 d-flex gap-1">
+          <button class="btn btn-sm btn-outline-primary flex-fill" onclick="event.stopPropagation(); manageCorridorParticipants(${corridor.id})">
+            <i class="bi bi-people"></i>
+          </button>
+          <button class="btn btn-sm btn-outline-success flex-fill" onclick="event.stopPropagation(); viewCorridorPayments(${corridor.id})">
+            <i class="bi bi-cash-coin"></i>
+          </button>
+          <button class="btn btn-sm btn-outline-info flex-fill" onclick="event.stopPropagation(); sendCorridorMessage(${corridor.id})">
+            <i class="bi bi-chat"></i>
+          </button>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  function renderTontines() {
+    if (!myTontines.length) {
+      tontinesList.innerHTML = '<div class="empty-state"><i class="bi bi-piggy-bank"></i><div>Aucune tontine créée</div><small class="text-muted">Vos tontines apparaîtront ici</small></div>';
+      return;
+    }
+    
+    tontinesList.innerHTML = myTontines.map(t => {
+      const tracking = paymentTrackingData[t.id];
+      const progress = tracking ? calculateProgress(tracking.completed_count, tracking.total_participants) : 0;
+      
+      return `
+        <div class="border rounded p-3 mb-3">
+          <div class="d-flex justify-content-between align-items-start">
+            <div class="flex-grow-1">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <strong>${escapeHtml(t.name)}</strong>
+                  ${t.description ? `<div class="small text-muted mt-1">${escapeHtml(t.description)}</div>` : ''}
+                  <div class="small text-muted mt-1">
+                    <i class="bi bi-calendar"></i> ${t.date ? t.date.split("T")[0] : "Non définie"}
+                    ${t.bareme ? ` • <i class="bi bi-currency-exchange"></i> ${t.bareme} XOF` : ''}
+                  </div>
+                  ${tracking ? `
+                  <div class="small mt-1">
+                    <span class="badge bg-${progress === 100 ? 'success' : progress > 50 ? 'warning' : 'danger'}">
+                      ${progress}% paiements complétés
+                    </span>
+                  </div>
+                  ` : ''}
+                </div>
+                <div class="text-end">
+                  <span class="badge bg-success">Active</span>
+                </div>
+              </div>
+              
+              ${t.token ? `
+              <div class="mt-3 card-token p-2 rounded">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <small class="text-muted">Token d'accès:</small>
+                    <div><code class="fs-6">${t.token}</code></div>
+                  </div>
+                  <div class="d-flex gap-1">
+                    <button class="btn btn-sm btn-outline-primary" onclick="copyToken('${t.token}')">
+                      <i class="bi bi-copy"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-info" onclick="showTontineDetails(${t.id})">
+                      <i class="bi bi-eye"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteTontine(${t.id})">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              ` : ''}
+            </div>
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  function renderCorridors() {
+    if (!myCorridors.length) {
+      corridorsList.innerHTML = '<div class="empty-state"><i class="bi bi-graph-up"></i><div>Aucun corridor créé</div><small class="text-muted">Vos corridors apparaîtront ici</small></div>';
+      return;
+    }
+    
+    corridorsList.innerHTML = myCorridors.map(c => `
+      <div class="border rounded p-3 mb-3 d-flex justify-content-between align-items-center">
+        <div class="flex-grow-1">
+          <strong>${escapeHtml(c.name)}</strong>
+          <div class="small text-muted">
+            ${c.bareme ? `<i class="bi bi-currency-exchange"></i> ${c.bareme} XOF` : ''}
+            ${c.commission ? ` • Commission: ${c.commission} XOF` : ''}
+          </div>
+        </div>
+        <div class="d-flex gap-1">
+          <button class="btn btn-sm btn-outline-danger" onclick="deleteCorridor(${c.id})">
+            <i class="bi bi-trash"></i> Supprimer
+          </button>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  // GESTION DES CONVERSATIONS
+
+  async function loadConversations() {
+    try {
+      const res = await fetch(API_BASE + "/api/messages/conversations", { headers });
+      
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`Erreur ${res.status}`);
+      }
+      
+      const data = await res.json();
+      
+      if (!data.success) {
+        throw new Error(data.message || "Erreur dans la réponse du serveur");
+      }
+      
+      conversations = data.data || [];
+      
+      renderConversations();
+      updateMessagesBadge();
+      
+    } catch (err) {
+      console.error("Erreur chargement conversations:", err);
+      
+      document.getElementById("receivedMessages").innerHTML = `
+        <div class="text-center text-danger py-4">
+          <i class="bi bi-exclamation-triangle"></i><br>
+          Erreur de chargement des messages<br>
+          <small class="text-muted">${err.message}</small>
+          <div class="mt-2">
+            <button class="btn btn-sm btn-outline-primary" onclick="loadConversations()">
+              <i class="bi bi-arrow-clockwise"></i> Réessayer
+            </button>
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  function renderConversations() {
+    const container = document.getElementById("receivedMessages");
+    
+    if (conversations.length === 0) {
+      container.innerHTML = '<div class="empty-state"><i class="bi bi-chat-left"></i><div>Aucun message reçu</div><small class="text-muted">Vos conversations apparaîtront ici</small></div>';
+      return;
+    }
+
+    container.innerHTML = conversations.map(conv => `
+      <div class="border rounded p-3 mb-2 message-item ${conv.unread_count > 0 ? 'message-unread' : ''}">
+        <div class="d-flex justify-content-between align-items-start">
+          <div class="flex-grow-1">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <strong>${conv.prenom} ${conv.nom}</strong>
+                ${conv.unread_count > 0 ? `<span class="badge bg-warning ms-2">${conv.unread_count} non lu(s)</span>` : ''}
+                <div class="small text-muted mt-1">
+                  <i class="bi bi-envelope"></i> ${conv.email}
+                </div>
+                <div class="small text-muted">
+                  ${conv.tontine_name ? `<i class="bi bi-piggy-bank"></i> ${conv.tontine_name}` : ''}
+                  ${conv.corridor_name ? `<i class="bi bi-graph-up"></i> ${conv.corridor_name}` : ''}
+                </div>
+              </div>
+              <div class="text-end">
+                <small class="text-muted">${new Date(conv.last_message_date).toLocaleDateString('fr-FR')}</small>
+              </div>
+            </div>
+            
+            <div class="mt-2 p-2 bg-white rounded border">
+              <div class="small">${escapeHtml(conv.last_message || 'Aucun message')}</div>
+            </div>
+            
+            <div class="mt-2 d-flex gap-1 conversation-actions">
+              <button class="btn btn-outline-primary btn-sm" onclick="openConversation(${conv.other_user_id}, ${conv.tontine_id || 'null'})">
+                <i class="bi bi-chat"></i> Répondre
+              </button>
+              <button class="btn btn-outline-info btn-sm" onclick="viewFullConversation(${conv.other_user_id}, ${conv.tontine_id || 'null'})">
+                <i class="bi bi-eye"></i> Voir
+              </button>
+              <button class="btn btn-outline-danger btn-sm" onclick="deleteConversation(${conv.other_user_id}, ${conv.tontine_id || 'null'})">
+                <i class="bi bi-trash"></i> Supprimer
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  function updateMessagesBadge() {
+    const totalUnread = conversations.reduce((total, conv) => total + (conv.unread_count || 0), 0);
+    
+    if (totalUnread > 0) {
+      messagesBadge.textContent = totalUnread;
+      messagesBadge.style.display = 'inline';
+      document.getElementById('quickMessagesCount').textContent = `${totalUnread} non lus`;
+    } else {
+      messagesBadge.style.display = 'none';
+      document.getElementById('quickMessagesCount').textContent = '0 non lus';
+    }
+  }
+
+  async function updateMessageParticipants(tontineId) {
+    try {
+      const select = document.getElementById('messageToParticipant');
+      select.innerHTML = '<option value="">Sélectionnez un participant</option>';
+      
+      if (!tontineId) return;
+      
+      const res = await fetch(API_BASE + `/api/organizer/tontines/${tontineId}/participants`, { headers });
+      if (!res.ok) return;
+      
+      const data = await res.json();
+      const participants = data.data || [];
+      
+      participants.forEach(participant => {
+        const option = document.createElement('option');
+        option.value = participant.id;
+        option.textContent = `${participant.prenom} ${participant.nom} - ${participant.email}`;
+        select.appendChild(option);
+      });
+    } catch (err) {
+      console.error("Erreur chargement participants:", err);
+    }
+  }
+
+  // HANDLERS DE FORMULAIRES
+
+  async function handleTontineSubmit(e) {
+    e.preventDefault();
+    const button = e.target.querySelector('button[type="submit"]');
+    
+    button.disabled = true;
+    button.innerHTML = '<span class="btn-loading"></span>';
+
+    try {
+      const fd = new FormData(formTontine);
+      const payload = {
+        name: fd.get("name").trim(),
+        date: fd.get("date") || new Date().toISOString().split('T')[0],
+        description: fd.get("description") || "",
+        bareme: parseFloat(fd.get("bareme")) || 0,
+        commission: parseFloat(fd.get("commission")) || 0,
+        phone: fd.get("phone") || ""
+      };
+
+      if (!payload.name) throw new Error("Le nom est requis");
+      if (!payload.bareme || payload.bareme <= 0) throw new Error("Le barème doit être un nombre positif");
+
+      const res = await fetch(API_BASE + "/api/tontines/create", {
+        method: "POST",
+        headers,
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.message || "Erreur création tontine");
+      }
+
+      await loadTontines();
+      formTontine.reset();
+      showNotification(" Tontine créée avec succès!", "success");
+    } catch (err) {
+      showNotification(`❌ ${err.message}`, "error");
+    } finally {
+      button.disabled = false;
+      button.innerHTML = '<i class="bi bi-plus-circle me-2"></i>Créer la Tontine';
+    }
+  }
+
+  async function handleCorridorSubmit(e) {
+    e.preventDefault();
+    const button = e.target.querySelector('button[type="submit"]');
+    
+    button.disabled = true;
+    button.innerHTML = '<span class="btn-loading"></span>';
+
+    try {
+      const fd = new FormData(formCorridor);
+      const payload = {
+        name: fd.get("name").trim(),
+        bareme: parseFloat(fd.get("bareme")) || 0,
+        commission: parseFloat(fd.get("commission")) || 0,
+        phone: fd.get("phone") || ""
+      };
+
+      if (!payload.name) throw new Error("Le nom est requis");
+      if (!payload.bareme || payload.bareme <= 0) throw new Error("Le barème doit être un nombre positif");
+
+      const res = await fetch(API_BASE + "/api/corridors/create", {
+        method: "POST",
+        headers,
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.message || "Erreur création corridor");
+      }
+
+      await loadCorridors();
+      formCorridor.reset();
+      showNotification(" Corridor créé avec succès!", "success");
+    } catch (err) {
+      showNotification(`❌ ${err.message}`, "error");
+    } finally {
+      button.disabled = false;
+      button.innerHTML = '<i class="bi bi-plus-circle me-2"></i>Créer le Corridor';
+    }
+  }
+
+  async function handleAddParticipant(e) {
+    e.preventDefault();
+    
+    const tontineId = document.getElementById("addTontineSelect").value;
+    const email = e.target.querySelector('input[type="email"]').value;
+    
+    if (!tontineId || !email) {
+      showNotification(" Veuillez remplir tous les champs", "error");
+      return;
+    }
+    
+    try {
+      const button = e.target.querySelector('button[type="submit"]');
+      button.disabled = true;
+      button.innerHTML = '<span class="btn-loading"></span>';
+      
+      const res = await fetch(API_BASE + "/api/organizer/tontines/participants/add", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ tontineId, email })
+      });
+      
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.message || "Erreur ajout participant");
+      }
+      
+      const result = await res.json();
+      showNotification(` ${result.message}`, "success");
+      e.target.reset();
+      
+      const selectedTontine = document.getElementById("selectedTontine").value;
+      if (selectedTontine === tontineId) {
+        await loadTontineParticipants(tontineId);
+      }
+    } catch (err) {
+      showNotification(`❌ ${err.message}`, "error");
+    } finally {
+      const button = e.target.querySelector('button[type="submit"]');
+      button.disabled = false;
+      button.innerHTML = '<i class="bi bi-person-add me-2"></i>Ajouter le Participant';
+    }
+  }
+
+  async function handleGroupMessage(e) {
+    e.preventDefault();
+    
+    const tontineId = document.getElementById("messageTontineSelect").value;
+    const message = e.target.querySelector('textarea').value;
+    
+    if (!tontineId || !message) {
+      showNotification(" Veuillez remplir tous les champs", "error");
+      return;
+    }
+    
+    try {
+      const button = e.target.querySelector('button[type="submit"]');
+      button.disabled = true;
+      button.innerHTML = '<span class="btn-loading"></span>';
+      
+      const res = await fetch(API_BASE + "/api/organizer/tontines/message", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ tontineId, message })
+      });
+      
+      if (!res.ok) throw new Error("Erreur envoi message");
+      
+      const result = await res.json();
+      showNotification(` ${result.message}`, "success");
+      e.target.reset();
+    } catch (err) {
+      showNotification(" Erreur lors de l'envoi du message", "error");
+    } finally {
+      const button = e.target.querySelector('button[type="submit"]');
+      button.disabled = false;
+      button.innerHTML = '<i class="bi bi-send me-2"></i>Envoyer le Message';
+    }
+  }
+
+  async function handleSendMessage(e) {
+    e.preventDefault();
+    
+    const participantId = document.getElementById("messageToParticipant").value;
+    const tontineId = document.getElementById("messageToTontine").value;
+    const messageTextarea = e.target.querySelector('textarea');
+    const messageContent = messageTextarea.value.trim();
+    
+    if (!participantId || !messageContent) {
+      showNotification(" Veuillez sélectionner un participant et écrire un message", "error");
+      return;
+    }
+    
+    try {
+      const button = e.target.querySelector('button[type="submit"]');
+      button.disabled = true;
+      button.innerHTML = '<span class="btn-loading"></span>';
+      
+      const res = await fetch(API_BASE + "/api/messages/send", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          receiverId: parseInt(participantId),
+          tontineId: tontineId ? parseInt(tontineId) : null,
+          message: messageContent
+        })
+      });
+      
+      const data = await res.json();
+      
+      if (!res.ok) {
+        throw new Error(data.message || "Erreur lors de l'envoi du message");
+      }
+      
+      showNotification(" Message envoyé avec succès", "success");
+      messageTextarea.value = '';
+      await loadConversations();
+      
+    } catch (err) {
+      showNotification(`❌ ${err.message}`, "error");
+    } finally {
+      const button = e.target.querySelector('button[type="submit"]');
+      button.disabled = false;
+      button.innerHTML = '<i class="bi bi-send me-2"></i>Envoyer le Message';
+    }
+  }
+
+  async function handleDistributeFunds(e) {
+    e.preventDefault();
+    
+    const participantId = document.getElementById('distributionParticipant').value;
+    const amount = parseFloat(e.target.querySelector('input[type="number"]').value);
+    const tontineId = document.getElementById('selectedTontine').value;
+    
+    if (!participantId || !amount || !tontineId) {
+      showNotification(' Veuillez remplir tous les champs', 'error');
+      return;
+    }
+
+    if (amount <= 0) {
+      showNotification(' Le montant doit être positif', 'error');
+      return;
+    }
+    
+    try {
+      const button = e.target.querySelector('button[type="submit"]');
+      button.disabled = true;
+      button.innerHTML = '<span class="btn-loading"></span>';
+      
+      const res = await fetch(API_BASE + '/api/payments/distribute', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ tontineId, userId: participantId, amount })
+      });
+      
+      const data = await res.json();
+      
+      if (!res.ok) throw new Error(data.message);
+      
+      showNotification(' Fonds distribués avec succès', 'success');
+      e.target.reset();
+      await loadTontineBalance(tontineId);
+      await loadTontineParticipants(tontineId);
+      
+    } catch (err) {
+      showNotification(`❌ ${err.message}`, 'error');
+    } finally {
+      const button = e.target.querySelector('button[type="submit"]');
+      button.disabled = false;
+      button.innerHTML = '<i class="bi bi-send"></i>';
+    }
+  }
+
+  async function handlePaymentReminder(e) {
+    e.preventDefault();
+    
+    const tontineId = document.getElementById('selectedTontine').value;
+    const message = e.target.querySelector('textarea').value;
+    
+    if (!tontineId) {
+      showNotification(' Veuillez sélectionner une tontine', 'error');
+      return;
+    }
+    
+    try {
+      const button = e.target.querySelector('button[type="submit"]');
+      button.disabled = true;
+      button.innerHTML = '<span class="btn-loading"></span>';
+      
+      const res = await fetch(API_BASE + '/api/payments/reminder', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ tontineId, message })
+      });
+      
+      const data = await res.json();
+      
+      if (!res.ok) throw new Error(data.message);
+      
+      showNotification(` ${data.message}`, 'success');
+      e.target.reset();
+      
+    } catch (err) {
+      showNotification(`❌ ${err.message}`, 'error');
+    } finally {
+      const button = e.target.querySelector('button[type="submit"]');
+      button.disabled = false;
+      button.innerHTML = '<i class="bi bi-bell me-2"></i>Envoyer Rappel';
+    }
+  }
+
+  async function loadTontineBalance(tontineId) {
+    try {
+      const res = await fetch(API_BASE + `/api/payments/balance/${tontineId}`, { headers });
+      if (!res.ok) return;
+
+      const data = await res.json();
+      const balance = data.data.balance;
+
+      document.getElementById('currentBalance').textContent = 
+        `${parseFloat(balance.current_balance).toLocaleString()} XOF`;
+
+    } catch (err) {
+      console.error('Erreur chargement solde:', err);
+    }
+  }
+
+  // FONCTIONS GLOBALES POUR LES ACTIONS
+
+  window.showActiveTontines = function() {
+    showTab('tab-creations');
+  };
+
+  window.showActiveCorridors = function() {
+    showTab('tab-corridors-active');
+  };
+
+  window.openTontineDetails = async function(tontineId) {
+    try {
+      const res = await fetch(API_BASE + `/api/tontines/${tontineId}`, { headers });
+      if (!res.ok) throw new Error("Erreur chargement détails tontine");
+      
+      const data = await res.json();
+      const tontine = data.data;
+      const tracking = paymentTrackingData[tontineId];
+      const progress = tracking ? calculateProgress(tracking.completed_count, tracking.total_participants) : 0;
+      
+      const modalContent = document.getElementById("tontineDetailsContent");
+      modalContent.innerHTML = `
+        <div class="row">
+          <div class="col-12">
+            <h6>Informations Générales</h6>
+            <table class="table table-sm">
+              <tr><td><strong>Nom:</strong></td><td>${escapeHtml(tontine.name)}</td></tr>
+              <tr><td><strong>Description:</strong></td><td>${escapeHtml(tontine.description || 'Non renseignée')}</td></tr>
+              <tr><td><strong>Barème:</strong></td><td>${tontine.bareme || '0'} XOF</td></tr>
+              <tr><td><strong>Commission:</strong></td><td>${tontine.commission || '0'} XOF</td></tr>
+              <tr><td><strong>Date:</strong></td><td>${tontine.date ? tontine.date.split('T')[0] : 'Non définie'}</td></tr>
+              <tr><td><strong>Token:</strong></td><td><code>${tontine.token || 'Non généré'}</code></td></tr>
+            </table>
+          </div>
+          ${tracking ? `
+          <div class="col-12 mt-3">
+            <h6>Suivi des Paiements</h6>
+            ${displayPaymentTracking(tontineId, tracking)}
+          </div>
+          ` : ''}
+        </div>
+        <div class="mt-3 d-flex gap-2">
+          <button class="btn btn-primary btn-sm" onclick="copyToken('${tontine.token}')">
+            <i class="bi bi-copy"></i> Copier le Token
+          </button>
+          <button class="btn btn-success btn-sm" onclick="manageTontineParticipants(${tontine.id})">
+            <i class="bi bi-people"></i> Gérer Participants
+          </button>
+        </div>
+      `;
+      
+      const modal = new bootstrap.Modal(document.getElementById('tontineDetailsModal'));
+      modal.show();
+    } catch (err) {
+      console.error("Erreur détails tontine:", err);
+      showNotification(" Erreur lors du chargement des détails", "error");
+    }
+  };
+
+  window.openCorridorDetails = async function(corridorId) {
+    try {
+      const res = await fetch(API_BASE + `/api/corridors/${corridorId}`, { headers });
+      if (!res.ok) throw new Error("Erreur chargement détails corridor");
+      
+      const data = await res.json();
+      const corridor = data.data;
+      
+      const modalContent = document.getElementById("corridorDetailsContent");
+      modalContent.innerHTML = `
+        <div class="row">
+          <div class="col-12">
+            <h6>Détails du Corridor</h6>
+            <table class="table table-sm">
+              <tr><td><strong>Nom:</strong></td><td>${escapeHtml(corridor.name)}</td></tr>
+              <tr><td><strong>Barème:</strong></td><td>${corridor.bareme || '0'} XOF</td></tr>
+              <tr><td><strong>Commission:</strong></td><td>${corridor.commission || '0'} XOF</td></tr>
+              <tr><td><strong>Participants:</strong></td><td>${corridor.participants_count || '0'}</td></tr>
+              <tr><td><strong>Solde actuel:</strong></td><td>${corridor.current_balance || '0'} XOF</td></tr>
+              <tr><td><strong>Date création:</strong></td><td>${corridor.created_at ? corridor.created_at.split('T')[0] : 'Non définie'}</td></tr>
+            </table>
+          </div>
+        </div>
+        <div class="mt-3 d-flex gap-2">
+          <button class="btn btn-primary btn-sm" onclick="manageCorridorParticipants(${corridor.id})">
+            <i class="bi bi-people"></i> Gérer Participants
+          </button>
+          <button class="btn btn-success btn-sm" onclick="viewCorridorPayments(${corridor.id})">
+            <i class="bi bi-cash-coin"></i> Voir Paiements
+          </button>
+        </div>
+      `;
+      
+      const modal = new bootstrap.Modal(document.getElementById('corridorDetailsModal'));
+      modal.show();
+    } catch (err) {
+      console.error("Erreur détails corridor:", err);
+      showNotification(" Erreur lors du chargement des détails du corridor", "error");
+    }
+  };
+
+  window.manageTontineParticipants = function(tontineId) {
+    document.getElementById('selectedTontine').value = tontineId;
+    showTab('tab-participants');
+    setTimeout(() => {
+      if (document.getElementById('selectedTontine').value == tontineId) {
+        loadTontineParticipants(tontineId);
+      }
+    }, 500);
+  };
+
+  window.manageCorridorParticipants = function(corridorId) {
+    showTab('tab-participants');
+    showNotification(" Fonctionnalité de gestion des participants pour les corridors à venir", "info");
+  };
+
+  window.viewCorridorPayments = function(corridorId) {
+    showTab('tab-participants');
+    showNotification(" Fonctionnalité de visualisation des paiements pour les corridors à venir", "info");
+  };
+
+  window.sendCorridorMessage = function(corridorId) {
+    showTab('tab-messages');
+    showNotification(" Fonctionnalité d'envoi de messages pour les corridors à venir", "info");
+  };
+
+  window.handleRequest = async (requestId, action) => {
+    const actionText = action === 'accept' ? 'accepter' : 'refuser';
+    if (!confirm(`Êtes-vous sûr de vouloir ${actionText} cette demande ?`)) return;
+    
+    try {
+      const button = event.target;
+      button.disabled = true;
+      button.innerHTML = '<span class="btn-loading"></span>';
+      
+      const res = await fetch(API_BASE + "/api/organizer/requests/handle", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ requestId, action })
+      });
+      
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.message || "Erreur traitement demande");
+      }
+      
+      const result = await res.json();
+      showNotification(` ${result.message}`, "success");
+      await loadPendingRequests();
+      await loadTontines();
+    } catch (err) {
+      console.error("Erreur traitement demande:", err);
+      showNotification(`❌ ${err.message}`, "error");
+    }
+  };
+
+  window.removeParticipant = async (tontineId, userId) => {
+    if (!confirm("Êtes-vous sûr de vouloir retirer ce participant ?")) return;
+    
+    try {
+      const res = await fetch(API_BASE + "/api/organizer/tontines/participants/remove", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ tontineId, userId })
+      });
+      
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.message || "Erreur retrait participant");
+      }
+      
+      const result = await res.json();
+      showNotification(` ${result.message}`, "success");
+      await loadTontineParticipants(tontineId);
+      await trackPayments(tontineId);
+    } catch (err) {
+      console.error("Erreur retrait participant:", err);
+      showNotification(`❌ ${err.message}`, "error");
+    }
+  };
+
+  window.contactParticipant = (participantId, email) => {
+    document.getElementById('messageToParticipant').value = participantId;
+    showTab('tab-messages');
+    document.querySelector('#sendMessageForm textarea').focus();
+  };
+
+  window.deleteTontine = async (id) => {
+    if (!confirm("Êtes-vous sûr de vouloir supprimer cette tontine ? Cette action est irréversible.")) return;
+    
+    try {
+      const res = await fetch(API_BASE + `/api/tontines/${id}`, { method: "DELETE", headers });
+      
+      if (res.ok) {
+        showNotification(" Tontine supprimée avec succès!", "success");
+        delete paymentTrackingData[id];
+        await loadTontines();
+      } else {
+        const error = await res.json();
+        throw new Error(error.message || "Erreur suppression");
+      }
+    } catch (err) {
+      console.error("Erreur suppression tontine:", err);
+      showNotification(`❌ ${err.message}`, "error");
+    }
+  };
+
+  window.deleteCorridor = async (id) => {
+    if (!confirm("Êtes-vous sûr de vouloir supprimer ce corridor ? Cette action est irréversible.")) return;
+    
+    try {
+      const res = await fetch(API_BASE + `/api/corridors/${id}`, { method: "DELETE", headers });
+      
+      if (res.ok) {
+        showNotification(" Corridor supprimé avec succès!", "success");
+        await loadCorridors();
+      } else {
+        const error = await res.json();
+        throw new Error(error.message || "Erreur suppression");
+      }
+    } catch (err) {
+      console.error("Erreur suppression corridor:", err);
+      showNotification(`❌ ${err.message}`, "error");
+    }
+  };
+
+  window.copyToken = (token) => {
+    navigator.clipboard?.writeText(token).then(() => {
+      showNotification(" Token copié dans le presse-papiers!", "success");
+    });
+  };
+
+  window.showTontineDetails = async (tontineId) => {
+    await openTontineDetails(tontineId);
+  };
+
+  window.openConversation = (userId, tontineId) => {
+    document.getElementById('messageToParticipant').value = userId;
+    if (tontineId && tontineId !== 'null') {
+      document.getElementById('messageToTontine').value = tontineId;
+      updateMessageParticipants(tontineId);
+    }
+    
+    showTab('tab-messages');
+    document.querySelector('#sendMessageForm textarea').focus();
+  };
+
+  window.viewFullConversation = async (userId, tontineId) => {
+    try {
+      let url = `${API_BASE}/api/messages/conversation/${userId}`;
+      if (tontineId && tontineId !== 'null') {
+        url += `?tontineId=${tontineId}`;
+      }
+      
+      const res = await fetch(url, { headers });
+      if (!res.ok) throw new Error("Erreur chargement conversation");
+      
+      const data = await res.json();
+      currentConversationMessages = data.data || [];
+      
+      currentConversationUserId = userId;
+      currentConversationTontineId = tontineId !== 'null' ? tontineId : null;
+      
+      const conversationContent = document.getElementById("conversationContent");
+      
+      if (currentConversationMessages.length === 0) {
+        conversationContent.innerHTML = '<div class="text-center text-muted py-4">Aucun message dans cette conversation</div>';
+      } else {
+        conversationContent.innerHTML = currentConversationMessages.map(msg => `
+          <div class="message-container border rounded p-3 mb-2 ${msg.sender_id === userId ? 'message-item' : 'message-sent'}">
+            <div class="message-actions">
+              <button class="btn btn-sm btn-outline-danger" onclick="deleteSingleMessage(${msg.id})" title="Supprimer ce message">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+            <div class="d-flex justify-content-between align-items-start">
+              <div class="flex-grow-1">
+                <strong>${msg.sender_prenom} ${msg.sender_nom}</strong>
+                <div class="small text-muted">${new Date(msg.created_at).toLocaleString('fr-FR')}</div>
+                <div class="mt-2">${escapeHtml(msg.message)}</div>
+              </div>
+              ${msg.is_read ? '<small class="text-success"><i class="bi bi-check2-all"></i> Lu</small>' : ''}
+            </div>
+          </div>
+        `).join('');
+      }
+      
+      document.querySelector('#conversationModal .modal-title').textContent = 
+        `Conversation avec ${currentConversationMessages[0]?.sender_prenom || 'Utilisateur'}`;
+      
+      const modal = new bootstrap.Modal(document.getElementById('conversationModal'));
+      modal.show();
+      
+    } catch (err) {
+      console.error("Erreur chargement conversation:", err);
+      showNotification(" Erreur lors du chargement de la conversation", "error");
+    }
+  };
+
+  window.deleteSingleMessage = async (messageId) => {
+    if (!confirm("Êtes-vous sûr de vouloir supprimer ce message ? Cette action est irréversible.")) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}/api/messages/${messageId}`, {
+        method: "DELETE",
+        headers
+      });
+
+      if (!res.ok) {
+        throw new Error("Erreur lors de la suppression du message");
+      }
+
+      showNotification(" Message supprimé avec succès", "success");
+      
+      if (currentConversationUserId) {
+        await viewFullConversation(currentConversationUserId, currentConversationTontineId);
+      }
+      
+      await loadConversations();
+      
+    } catch (err) {
+      console.error("Erreur suppression message:", err);
+      showNotification(" Erreur lors de la suppression du message", "error");
+    }
+  };
+
+  window.deleteConversation = async (userId, tontineId) => {
+    if (!confirm("Êtes-vous sûr de vouloir supprimer toute cette conversation ? Cette action est irréversible.")) {
+      return;
+    }
+
+    try {
+      let url = `${API_BASE}/api/messages/conversation/${userId}`;
+      if (tontineId && tontineId !== 'null') {
+        url += `?tontineId=${tontineId}`;
+      }
+
+      const res = await fetch(url, {
+        method: "DELETE",
+        headers
+      });
+
+      if (!res.ok) {
+        throw new Error("Erreur lors de la suppression de la conversation");
+      }
+
+      showNotification(" Conversation supprimée avec succès", "success");
+      
+      await loadConversations();
+      
+      const modal = bootstrap.Modal.getInstance(document.getElementById('conversationModal'));
+      if (modal) {
+        modal.hide();
+      }
+      
+    } catch (err) {
+      console.error("Erreur suppression conversation:", err);
+      showNotification("❌ Erreur lors de la suppression de la conversation", "error");
+    }
+  };
+
+  window.clearAllMessages = async () => {
+    if (!confirm("Êtes-vous sûr de vouloir supprimer TOUS les messages ? Cette action est irréversible et supprimera toutes vos conversations.")) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}/api/messages/clear-all`, {
+        method: "DELETE",
+        headers
+      });
+
+      const responseText = await res.text();
+
+      let responseData;
+      try {
+        responseData = JSON.parse(responseText);
+      } catch (e) {
+        throw new Error("Réponse invalide du serveur");
+      }
+
+      if (!res.ok) {
+        throw new Error(responseData.message || `Erreur ${res.status} lors de la suppression des messages`);
+      }
+
+      if (!responseData.success) {
+        throw new Error(responseData.message || "Erreur lors de la suppression des messages");
+      }
+
+      showNotification(" Tous les messages ont été supprimés avec succès", "success");
+      
+      conversations = [];
+      currentConversationMessages = [];
+      currentConversationUserId = null;
+      currentConversationTontineId = null;
+      
+      renderConversations();
+      updateMessagesBadge();
+      
+      const modal = bootstrap.Modal.getInstance(document.getElementById('conversationModal'));
+      if (modal) {
+        modal.hide();
+      }
+      
+      setTimeout(() => {
+        loadConversations();
+      }, 1000);
+      
+    } catch (err) {
+      console.error("Erreur suppression des messages:", err);
+      
+      let errorMessage = "Erreur lors de la suppression des messages";
+      
+      if (err.message.includes('401')) {
+        errorMessage = "Session expirée - Veuillez vous reconnecter";
+        setTimeout(() => {
+          localStorage.removeItem("mec_token");
+          localStorage.removeItem("mec_role");
+          window.location.href = "login.html";
+        }, 2000);
+      } else if (err.message.includes('404')) {
+        errorMessage = "Fonctionnalité non disponible sur le serveur";
+      } else if (err.message.includes('500')) {
+        errorMessage = "Erreur serveur - Impossible de supprimer les messages pour le moment";
+      } else {
+        errorMessage = err.message;
+      }
+      
+      showNotification(`❌ ${errorMessage}`, "error");
+    }
+  };
+
+  // INITIALISATION
+
+  function initializeEventListeners() {
+    const formTontine = document.getElementById("formTontine");
+    const formCorridor = document.getElementById("formCorridor");
+    const btnLogout = document.getElementById("btnLogout");
+    const btnProfile = document.getElementById("btnProfile");
+    const btnNotifications = document.getElementById("btnNotifications");
+    const requestsBadge = document.getElementById("requestsBadge");
+    const messagesBadge = document.getElementById("messagesBadge");
+
+    btnLogout.addEventListener("click", () => {
+      localStorage.removeItem("mec_token");
+      localStorage.removeItem("mec_role");
+      window.location.href = "login.html";
+    });
+    
+    if (btnProfile) {
+      btnProfile.addEventListener("click", () => window.location.href = "profile.html");
+    }
+    
+    if (btnNotifications) {
+      btnNotifications.addEventListener("click", () => {
+        const tabs = new bootstrap.Tab(document.querySelector('#dashboardTabs a[href="#tab-requests"]'));
+        tabs.show();
+      });
+    }
+
+    formTontine.addEventListener("submit", handleTontineSubmit);
+    formCorridor.addEventListener("submit", handleCorridorSubmit);
+
+    const addParticipantForm = document.getElementById("addParticipantForm");
+    if (addParticipantForm) {
+      addParticipantForm.addEventListener("submit", handleAddParticipant);
+    }
+
+    const groupMessageForm = document.getElementById("groupMessageForm");
+    if (groupMessageForm) {
+      groupMessageForm.addEventListener("submit", handleGroupMessage);
+    }
+
+    const sendMessageForm = document.getElementById("sendMessageForm");
+    if (sendMessageForm) {
+      sendMessageForm.addEventListener("submit", handleSendMessage);
+    }
+
+    const btnReplyInModal = document.getElementById("btnReplyInModal");
+    if (btnReplyInModal) {
+      btnReplyInModal.addEventListener('click', () => {
+        if (currentConversationUserId) {
+          const modal = bootstrap.Modal.getInstance(document.getElementById('conversationModal'));
+          if (modal) modal.hide();
+          openConversation(currentConversationUserId, currentConversationTontineId);
+        }
+      });
+    }
+
+    const selectedTontine = document.getElementById('selectedTontine');
+    if (selectedTontine) {
+      selectedTontine.addEventListener('change', function() {
+        if (this.value) {
+          loadTontineParticipants(this.value);
+        } else {
+          const participantsList = document.getElementById('participantsList');
+          if (participantsList) {
+            participantsList.innerHTML = '<div class="empty-state"><i class="bi bi-people"></i><div>Sélectionnez une tontine</div><small class="text-muted">Choisissez une tontine pour voir ses participants</small></div>';
+          }
+          document.getElementById('tontineStats').style.display = 'none';
+        }
+      });
+    }
+
+    const btnRefreshParticipants = document.getElementById('btnRefreshParticipants');
+    if (btnRefreshParticipants) {
+      btnRefreshParticipants.addEventListener('click', function() {
+        const tontineId = document.getElementById('selectedTontine').value;
+        if (tontineId) {
+          loadTontineParticipants(tontineId);
+        }
+      });
+    }
+
+    const messageToTontine = document.getElementById('messageToTontine');
+    if (messageToTontine) {
+      messageToTontine.addEventListener('change', function() {
+        updateMessageParticipants(this.value);
+      });
+    }
+
+    const distributeFundsForm = document.getElementById('distributeFundsForm');
+    if (distributeFundsForm) {
+      distributeFundsForm.addEventListener('submit', handleDistributeFunds);
+    }
+
+    const paymentReminderForm = document.getElementById('paymentReminderForm');
+    if (paymentReminderForm) {
+      paymentReminderForm.addEventListener('submit', handlePaymentReminder);
+    }
+  }
+
+  async function initDashboard() {
+    console.log("🚀 Initialisation du dashboard organisateur...");
+    
+    initializeEventListeners();
+    
+    await Promise.all([
+      loadTontines(),
+      loadCorridors(),
+      loadPendingRequests(),
+      loadConversations()
+    ]);
+    
+    console.log(" Dashboard organisateur initialisé avec suivi des paiements");
+  }
+
+  initDashboard();
+
+  setInterval(() => {
+    loadPendingRequests();
+    loadConversations();
+  }, 30000);
+
+})();
+
+function escapeHtml(s){ 
+  if(!s) return ""; 
+  return String(s).replace(/[&<>"']/g, m => ({ 
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' 
+  })[m]); 
+}
+
+function showNotification(message, type = "info") {
+  const alertClass = type === "success" ? "alert-success" : type === "info" ? "alert-info" : "alert-danger";
+  const notification = document.createElement('div');
+  notification.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
+  notification.style.cssText = `
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    min-width: 300px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  `;
+  notification.innerHTML = `
+    ${message}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  `;
+  
+  document.body.appendChild(notification);
+  
+  setTimeout(() => {
+    if (notification.parentNode) {
+      notification.remove();
+    }
+  }, 5000);
+}
+
+window.showTab = (tabId) => {
+  const tab = new bootstrap.Tab(document.querySelector(`#dashboardTabs a[href="#${tabId}"]`));
+  tab.show();
+};
+
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diagnostic - Micro-Épargne</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container mt-5">
+    <h1> Diagnostic Système</h1>
+    
+    <div class="row mt-4">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">
+            <h5>Test API</h5>
+          </div>
+          <div class="card-body">
+            <button class="btn btn-primary" onclick="testAPI()">Tester l'API</button>
+            <div id="apiResult" class="mt-3"></div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">
+            <h5>Test Base de Données</h5>
+          </div>
+          <div class="card-body">
+            <button class="btn btn-warning" onclick="testDatabase()">Tester la BDD</button>
+            <div id="dbResult" class="mt-3"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mt-4">
+      <div class="card-header">
+        <h5>Créer un utilisateur de test directement</h5>
+      </div>
+      <div class="card-body">
+        <button class="btn btn-success" onclick="createTestUser()">Créer utilisateur test en BDD</button>
+        <div id="createUserResult" class="mt-3"></div>
+      </div>
+    </div>
+
+    <div class="card mt-4">
+      <div class="card-header">
+        <h5>Logs de débogage</h5>
+      </div>
+      <div class="card-body">
+        <pre id="debugLogs" style="height: 200px; overflow-y: scroll; background: #f8f9fa; padding: 10px;"></pre>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = 'http://localhost:3000/api';
+
+    function log(message) {
+      const logs = document.getElementById('debugLogs');
+      logs.innerHTML += `[${new Date().toLocaleTimeString()}] ${message}\n`;
+      logs.scrollTop = logs.scrollHeight;
+    }
+
+    async function testAPI() {
+      log('Test de l\'API en cours...');
+      const result = document.getElementById('apiResult');
+      
+      try {
+        const response = await fetch(API_URL + '/auth/test');
+        const data = await response.json();
+        
+        if (response.ok) {
+          result.innerHTML = `<div class="alert alert-success"> API fonctionnelle: ${data.message || 'OK'}</div>`;
+          log(' API fonctionnelle');
+        } else {
+          result.innerHTML = `<div class="alert alert-warning"> API accessible mais erreur: ${data.message}</div>`;
+          log(' API accessible mais erreur');
+        }
+      } catch (error) {
+        result.innerHTML = `<div class="alert alert-danger"> API inaccessible: ${error.message}</div>`;
+        log(' API inaccessible: ' + error.message);
+      }
+    }
+
+    async function testDatabase() {
+      log(' Test de la base de données en cours...');
+      const result = document.getElementById('dbResult');
+      
+      try {
+        // Essayer de récupérer la liste des utilisateurs
+        const response = await fetch(API_URL + '/users');
+        const data = await response.json();
+        
+        if (response.ok) {
+          result.innerHTML = `<div class="alert alert-success">
+             Base de données accessible<br>
+             ${data.length} utilisateur(s) trouvé(s)
+          </div>`;
+          log(` BDD accessible - ${data.length} utilisateurs`);
+          console.log('Utilisateurs en BDD:', data);
+        } else {
+          result.innerHTML = `<div class="alert alert-warning"> BDD accessible mais erreur</div>`;
+          log(' BDD accessible mais erreur');
+        }
+      } catch (error) {
+        result.innerHTML = `<div class="alert alert-danger"> Impossible d'accéder à la BDD: ${error.message}</div>`;
+        log(' Impossible d\'accéder à la BDD: ' + error.message);
+      }
+    }
+
+    async function createTestUser() {
+      log('👤 Création d\'un utilisateur test en BDD...');
+      const result = document.getElementById('createUserResult');
+      
+      const testUser = {
+        prenom: 'Test',
+        nom: 'User',
+        email: 'test@diagnostic.com',
+        telephone: '+226 00 00 00 00',
+        password: 'test123',
+        role: 'organisateur',
+        is_premium: false
+      };
+
+      try {
+        const response = await fetch(API_URL + '/auth/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(testUser)
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          result.innerHTML = `<div class="alert alert-success">
+             Utilisateur créé en BDD avec succès!<br>
+             Email: ${testUser.email}<br>
+             Mot de passe: ${testUser.password}<br>
+             ID: ${data.user.id}
+          </div>`;
+          log(` Utilisateur créé en BDD - ID: ${data.user.id}`);
+        } else {
+          result.innerHTML = `<div class="alert alert-danger">
+             Erreur lors de la création: ${data.message || 'Erreur inconnue'}
+          </div>`;
+          log(` Erreur création utilisateur: ${data.message}`);
+        }
+      } catch (error) {
+        result.innerHTML = `<div class="alert alert-danger"> Erreur réseau: ${error.message}</div>`;
+        log(' Erreur réseau lors de la création: ' + error.message);
+      }
+    }
+
+    // Tests automatiques au chargement
+    window.addEventListener('DOMContentLoaded', function() {
+      log(' Démarrage du diagnostic...');
+      setTimeout(testAPI, 1000);
+      setTimeout(testDatabase, 2000);
+    });
+  </script>
+</body>
+</html>
